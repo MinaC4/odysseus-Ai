@@ -9,6 +9,7 @@ const pages = {
   learning: lazy(() => import('./pages/LearningTracker').then(module=>({default:module.LearningTracker}))),
   bookmarks: lazy(() => import('./pages/Bookmarks').then(module=>({default:module.Bookmarks}))),
   files: lazy(() => import('./pages/FileSharing').then(module=>({default:module.FileSharing}))),
+  launcher: lazy(() => import('./pages/QuickLauncher').then(module=>({default:module.QuickLauncher}))),
 };
 export function mountWorkspace(host: HTMLElement, selected: keyof typeof pages) {
   const shadow = host.attachShadow({ mode: 'open' });

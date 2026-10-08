@@ -31,6 +31,16 @@ stack-exhaustion advisory GHSA-vfj7-8cjw-p6xm. No development server is deployed
 build inputs are fixed trusted source paths. This is not a claim of a clean
 full dependency scan. PostCSS and selector parsing were upgraded separately.
 
-NOT YET VERIFIED: live data capture, all six production browser workflows,
-reminder delivery across restarts, complete old/new capability parity and removal
-of the original pages. Do not call this migration complete until those checks pass.
+Verified initial production migration: 494 records to account admin with matching
+source/destination digest; original data and SQLite backups retained. The next
+candidate adds Quick Launcher (79 source links observed), full-viewport windows
+and ten owner-scoped work facts, seeded once with a memory backup. Source data is
+not automatically updated from the new workspace.
+
+Candidate checks: 13 isolated integration tests, strict TypeScript/Vite build,
+seven native tools at desktop/mobile sizes with fullscreen geometry checks and
+no browser runtime errors. Production Launcher capture and rollout require the
+image import and Hephastos scripts/activate-personal-workspace.sh. Still pending:
+production CRUD acceptance, reminder delivery across restarts, configured SSH
+devices and off-device recovery. Infrastructure remains deliberately read-only;
+this is not unrestricted control of every Hephastos dashboard API.

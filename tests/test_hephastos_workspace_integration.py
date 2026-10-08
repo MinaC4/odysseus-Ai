@@ -28,6 +28,23 @@ class WorkspaceIntegrationTests(unittest.TestCase):
         self.assertTrue(all(not rows for rows in export_snapshot("other-user").values()))
         self.assertEqual(query_collection("other-user", "bookmarks", {}), [])
 
+    def test_launcher_crud_and_unsafe_urls(self):
+        saved=query_collection('admin','quick_links',{'action':'insert','values':{'title':'Workspace','url':'https://example.org','favorite':True},'single':'required'})
+        self.assertTrue(saved['favorite'])
+        self.assertEqual(query_collection('other','quick_links',{}),[])
+        for url in ['javascript:alert(1)','https://user:password@example.org','file:///etc/passwd']:
+            with self.assertRaises(ValueError):query_collection('admin','quick_links',{'action':'insert','values':{'title':'Unsafe','url':url}})
+
+    def test_work_memory_is_idempotent_and_owner_scoped(self):
+        import tempfile
+        from src.memory import MemoryManager
+        from services.hephastos_context import seed_work_context,FACTS
+        with tempfile.TemporaryDirectory() as folder, patch.dict(os.environ,{'HEPHASTOS_WORKSPACE_OWNER':'admin'}):
+            manager=MemoryManager(folder)
+            seed_work_context(manager);seed_work_context(manager)
+            self.assertEqual(len(manager.load(owner='admin')),len(FACTS))
+            self.assertEqual(manager.load(owner='other'),[])
+
     def test_conflict_does_not_overwrite_or_partially_import(self):
         import_snapshot("admin", self.capture())
         replacement = self.capture()

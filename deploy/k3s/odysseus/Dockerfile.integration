@@ -14,6 +14,7 @@ COPY src/ ./src/
 COPY routes/hephastos_routes.py routes/productivity_routes.py routes/productivity_script_routes.py ./routes/
 COPY services/hephastos.py services/productivity.py services/productivity_proposals.py services/productivity_scripts.py ./services/
 COPY services/productivity_reminders.py ./services/productivity_reminders.py
+COPY services/hephastos_context.py ./services/hephastos_context.py
 COPY scripts/migrate_hephastos_workspace.py ./scripts/migrate_hephastos_workspace.py
 COPY static/ ./static/
 COPY --from=workspace /static/productivity/ ./static/productivity/

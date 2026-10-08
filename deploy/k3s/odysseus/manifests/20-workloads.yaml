@@ -45,7 +45,7 @@ spec:
               mountPath: /data
       containers:
         - name: odysseus
-          image: odysseus-ai:hephastos-1
+          image: odysseus-ai:hephastos-2
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
@@ -63,7 +63,7 @@ spec:
                   name: hephastos-odysseus-bridge
                   key: token
             - name: ODYSSEUS_PRODUCTIVITY_ACTIVE
-              value: "false"
+              value: "true"
             - name: PUID
               value: "1000"
             - name: PGID

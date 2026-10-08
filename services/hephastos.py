@@ -45,7 +45,10 @@ def connection(owner):
 
 async def read_hephastos(capability, cluster_id=None, *, owner):
     require_owner(owner)
-    if capability not in {"clusters", "inventory", "projects", "tools"}:
+    if capability == 'context':
+        from services.hephastos_context import work_context
+        return work_context(owner)
+    if capability not in {"clusters", "inventory", "projects", "tasks", "tools"}:
         raise ValueError("Unsupported Hephastos read capability")
     if capability == "inventory" and (not isinstance(cluster_id, str) or not cluster_id):
         raise ValueError("Select an explicit cluster from the clusters result")

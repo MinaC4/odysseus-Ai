@@ -4,7 +4,7 @@
   --bm-muted:var(--color-muted,#99a0aa); --learning-line:var(--border); --learning-muted:var(--color-muted,#99a0aa);
   --fs-border:var(--border); --fs-text:var(--fg); --fs-muted:var(--color-muted,#99a0aa); --fs-accent:var(--accent-primary,var(--fg));
   --idea-border:var(--border); --idea-accent:var(--accent-primary,var(--fg)); }
-.day-planner,.bookmark-page,.learning-workspace,.fs-page,.idea-workspace,.scripts-workspace {
+.day-planner,.bookmark-page,.learning-workspace,.fs-page,.idea-workspace,.scripts-workspace,.quick-launcher {
   background:var(--bg)!important; color:var(--fg)!important; font-family:inherit!important;
   --planner-text:var(--fg); --planner-muted:var(--color-muted,#99a0aa); --planner-line:var(--border);
   --planner-accent:var(--accent-primary,var(--fg)); --planner-surface:var(--panel); --bm-ink:var(--fg); --bm-line:var(--border);

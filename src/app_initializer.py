@@ -75,6 +75,8 @@ def initialize_managers(base_dir: str, rag_manager=None) -> Dict[str, Any]:
 
     # Initialize core managers
     memory_manager = MemoryManager(DATA_DIR)
+    from services.hephastos_context import seed_work_context
+    seed_work_context(memory_manager)
     skills_manager = SkillsManager(DATA_DIR)
     session_manager = SessionManager(SESSIONS_FILE)
     set_session_manager(session_manager)  # Enable Session.add_message() persistence

@@ -9,8 +9,9 @@ from contextlib import nullcontext
 from core.database import SessionLocal, ProductivityRecord, ProductivityEvent
 
 COLLECTIONS = {"calendar_items", "daily_entries", "ideas", "scripts", "learning_items",
-               "learning_materials", "bookmarks", "shared_items", "shared_item_files"}
+               "learning_materials", "bookmarks", "shared_items", "shared_item_files", "quick_links"}
 DEFAULTS = {
+    "quick_links": {"type": "external", "icon": None, "category": "other", "description": "", "tags": [], "favorite": False, "sort_order": 0},
     "calendar_items": {"time": None, "done": False, "type": "task", "priority": "medium", "duration_min": 0,
                        "notify_minutes": 10, "notify_message": None, "reminder_time": None, "notes": "", "link": None, "sort_order": 0},
     "daily_entries": {"raw_notes": "", "ai_summary": ""},
@@ -25,6 +26,12 @@ DEFAULTS = {
 }
 
 def validate_record(collection, payload, db, owner):
+    if collection == 'quick_links':
+        from urllib.parse import urlsplit
+        try:
+            url=urlsplit(payload.get('url',''))
+            if url.scheme not in {'http','https'} or not url.hostname or url.username or url.password:raise ValueError('Use an HTTP(S) URL without credentials')
+        except (ValueError,TypeError):raise ValueError('Use an HTTP(S) URL without credentials')
     if len(str(payload)) > 15_000_000: raise ValueError("Record exceeds size limit")
     if 'tags' in payload and (not isinstance(payload['tags'],list) or len(payload['tags'])>100 or any(not isinstance(tag,str) or len(tag)>100 for tag in payload['tags'])):
         raise ValueError('Tags must be a bounded text list')

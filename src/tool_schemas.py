@@ -286,11 +286,11 @@ def normalized_native_function_argument_error(
 # ---------------------------------------------------------------------------
 FUNCTION_TOOL_SCHEMAS = [
     {"type": "function", "function": {"name": "manage_productivity",
-      "description": "Read personal Day Organizer, Ideas, Scripts, Learning, Bookmarks and Files. Propose changes for human approval in Personal workspace. Never claim an edit was applied until approved. Binary file contents are excluded.",
+      "description": "Read personal Day Organizer, Ideas, Scripts, Learning, Bookmarks, Files and Quick Launcher. Propose changes for human approval in Personal workspace. Never claim an edit was applied until approved. Binary file contents are excluded.",
       "parameters": {"type": "object", "properties": {
         "action": {"type": "string", "enum": ["list", "get", "propose"]},
         "record_id": {"type": "string", "description": "Exact record ID (or date for daily notes) when action=get; first discover IDs with list."},
-        "collection": {"type": "string", "enum": ["calendar_items", "daily_entries", "ideas", "scripts", "learning_items", "learning_materials", "bookmarks", "shared_items", "shared_item_files"]},
+        "collection": {"type": "string", "enum": ["calendar_items", "daily_entries", "ideas", "scripts", "learning_items", "learning_materials", "bookmarks", "shared_items", "shared_item_files", "quick_links"]},
         "filters": {"type": "array", "items": {"type": "object"}},
         "operation": {"type": "object", "description": "Proposed action insert/update/delete/upsert, values, and explicit filters [{field:id,op:eq,value:record-id}]. Creates a proposal only."}
       }, "required": ["action", "collection"]}}},
@@ -298,10 +298,10 @@ FUNCTION_TOOL_SCHEMAS = [
         "type": "function",
         "function": {
             "name": "read_hephastos",
-            "description": "Read verified Hephastos cluster evidence. First list clusters, then select an explicit cluster_id for bounded node/pod inventory. Cite source and observedAt. Never infer health or complete counts from unavailable/partial evidence. No deployments, shell, exec, credentials or mutations are supported.",
+            "description": "Read Hephastos and the owner's work context. Read context to understand their projects and preferences; saved memory is not live runtime evidence. List clusters then select explicit cluster_id for inventory; use projects/tools for current metadata. Cite source and observedAt. No deployments, shell, exec, credentials or infrastructure mutations.",
             "parameters": {
                 "type": "object", "additionalProperties": False,
-                "properties": {"capability": {"type": "string", "enum": ["clusters", "inventory", "projects", "tools"]},
+                "properties": {"capability": {"type": "string", "enum": ["context", "clusters", "inventory", "projects", "tasks", "tools"]},
                                "cluster_id": {"type": "string"}},
                 "required": ["capability"]
             }

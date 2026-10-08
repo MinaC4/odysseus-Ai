@@ -18,12 +18,12 @@ def digest(snapshot):
     return hashlib.sha256(json.dumps(canonical,sort_keys=True,ensure_ascii=False,separators=(',',':')).encode()).hexdigest()
 
 
-async def capture(owner):
+async def capture(owner, collections=COLLECTIONS):
     base,token=connection(owner)
     result={}
     total_bytes=0
     async with httpx.AsyncClient(timeout=30,follow_redirects=False,trust_env=False) as client:
-        for collection in sorted(COLLECTIONS):
+        for collection in sorted(collections):
             rows=[]
             while True:
                 async with client.stream('GET',f'{base}/api/assistant/workspace-export/{collection}',
@@ -44,10 +44,15 @@ async def capture(owner):
 
 
 async def main():
+    import argparse
+    parser=argparse.ArgumentParser()
+    parser.add_argument('--collection',choices=sorted(COLLECTIONS))
+    options=parser.parse_args()
+    collections={options.collection} if options.collection else COLLECTIONS
     owner=os.environ.get('HEPHASTOS_WORKSPACE_OWNER')
     if not owner: raise RuntimeError('Configure the exact workspace owner first')
-    first=await capture(owner)
-    second=await capture(owner)
+    first=await capture(owner,collections)
+    second=await capture(owner,collections)
     if digest(first)!=digest(second): raise RuntimeError('Source changed during capture; retry without editing either workspace')
     folder=Path(DATA_DIR)/'backups'; folder.mkdir(mode=0o700,exist_ok=True)
     stamp=datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')
@@ -55,8 +60,10 @@ async def main():
     with sqlite3.connect(str(Path(DATA_DIR)/'app.db')) as source, sqlite3.connect(str(backup)) as target:
         source.backup(target)
     os.chmod(backup,0o600)
-    count=import_snapshot(owner,first)
-    saved=export_snapshot(owner)
+    combined=export_snapshot(owner)
+    combined.update(first)
+    count=import_snapshot(owner,combined)
+    saved={key:rows for key,rows in export_snapshot(owner).items() if key in collections}
     if digest(saved)!=digest(first): raise RuntimeError('Saved capture differs from source; keep source active and inspect the backup')
     from core.database import SessionLocal,ProductivityEvent
     from uuid import uuid4
