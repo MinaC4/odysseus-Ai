@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: odysseus
+  labels:
+    app.kubernetes.io/part-of: odysseus
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: odysseus-searxng
+  namespace: odysseus
+data:
+  settings.yml.template: |
+    use_default_settings: true
+    server:
+      secret_key: "__SEARXNG_SECRET__"
+    search:
+      formats:
+        - html
+        - json

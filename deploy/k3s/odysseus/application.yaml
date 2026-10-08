@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: odysseus
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/MinaC4/odysseus-Ai.git
+    targetRevision: deploy/odysseus-k3s
+    path: deploy/k3s/odysseus/manifests
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: odysseus
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

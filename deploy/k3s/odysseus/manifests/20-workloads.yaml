@@ -1,0 +1,392 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: odysseus
+  namespace: odysseus
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: odysseus
+      app.kubernetes.io/component: app
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: odysseus
+        app.kubernetes.io/component: app
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        fsGroup: 1000
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/instance: odysseus
+      initContainers:
+        - name: prepare-data
+          image: busybox:1.37
+          command: ["sh", "-c", "mkdir -p /data/app /data/huggingface /data/local /data/ssh /data/logs"]
+          securityContext:
+            runAsUser: 0
+          resources:
+            requests:
+              cpu: 5m
+              memory: 8Mi
+            limits:
+              cpu: 20m
+              memory: 16Mi
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      containers:
+        - name: odysseus
+          image: ghcr.io/odysseus-dev/odysseus@sha256:fdf83124b906a67a3218b20d8e7f22c5514982da4cebfd965019728922f3df2e
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 7000
+          env:
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+            - name: ODYSSEUS_DATA_DIR
+              value: /app/data
+            - name: DATABASE_URL
+              value: sqlite:////app/data/app.db
+            - name: AUTH_ENABLED
+              value: "true"
+            - name: LOCALHOST_BYPASS
+              value: "false"
+            - name: ODYSSEUS_ADMIN_USER
+              value: admin
+            - name: ODYSSEUS_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: odysseus-runtime
+                  key: admin-password
+            - name: ALLOWED_ORIGINS
+              value: http://odysseus.192.168.1.8.nip.io
+            - name: SEARXNG_INSTANCE
+              value: http://searxng:8080
+            - name: CHROMADB_HOST
+              value: chromadb
+            - name: CHROMADB_PORT
+              value: "8000"
+            - name: HF_HOME
+              value: /app/.cache/huggingface
+            - name: ODYSSEUS_INPROCESS_POLLERS
+              value: "1"
+            - name: ODYSSEUS_INPROCESS_TASKS
+              value: "1"
+          resources:
+            requests:
+              cpu: 300m
+              memory: 1Gi
+            limits:
+              cpu: 2
+              memory: 2560Mi
+          startupProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 30
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            periodSeconds: 20
+            timeoutSeconds: 3
+          readinessProbe:
+            httpGet:
+              path: /api/ready
+              port: http
+            periodSeconds: 10
+            timeoutSeconds: 5
+          volumeMounts:
+            - name: data
+              mountPath: /app/data
+              subPath: app
+            - name: data
+              mountPath: /app/logs
+              subPath: logs
+            - name: data
+              mountPath: /app/.ssh
+              subPath: ssh
+            - name: data
+              mountPath: /app/.cache/huggingface
+              subPath: huggingface
+            - name: data
+              mountPath: /app/.local
+              subPath: local
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: odysseus-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: odysseus
+  namespace: odysseus
+spec:
+  selector:
+    app.kubernetes.io/instance: odysseus
+    app.kubernetes.io/component: app
+  ports:
+    - name: http
+      port: 7000
+      targetPort: http
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chromadb
+  namespace: odysseus
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: odysseus
+      app.kubernetes.io/component: chromadb
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: odysseus
+        app.kubernetes.io/component: chromadb
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        fsGroup: 1000
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/instance: odysseus
+      containers:
+        - name: chromadb
+          image: docker.io/chromadb/chroma:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8000
+          env:
+            - name: ANONYMIZED_TELEMETRY
+              value: "FALSE"
+          resources:
+            requests:
+              cpu: 100m
+              memory: 384Mi
+            limits:
+              cpu: 500m
+              memory: 768Mi
+          readinessProbe:
+            tcpSocket:
+              port: http
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: http
+            periodSeconds: 20
+          volumeMounts:
+            - name: data
+              mountPath: /chroma/chroma
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: odysseus-chroma
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: chromadb
+  namespace: odysseus
+spec:
+  selector:
+    app.kubernetes.io/instance: odysseus
+    app.kubernetes.io/component: chromadb
+  ports:
+    - name: http
+      port: 8000
+      targetPort: http
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: searxng
+  namespace: odysseus
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: odysseus
+      app.kubernetes.io/component: searxng
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: odysseus
+        app.kubernetes.io/component: searxng
+    spec:
+      automountServiceAccountToken: false
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/instance: odysseus
+      containers:
+        - name: searxng
+          image: docker.io/searxng/searxng:2026.9.25-12f8b6515@sha256:5286edb35782454ab8a102c5eff6b54bff745853191b46aeead95f225aa6dfb6
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              set -eu
+              if [ ! -s /etc/searxng/settings.yml ]; then
+                sed "s|__SEARXNG_SECRET__|${SEARXNG_SECRET}|g" /tmp/settings.yml.template > /etc/searxng/settings.yml
+              fi
+              exec /usr/local/searxng/entrypoint.sh
+          ports:
+            - name: http
+              containerPort: 8080
+          env:
+            - name: SEARXNG_BASE_URL
+              value: http://searxng:8080/
+            - name: SEARXNG_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: odysseus-runtime
+                  key: searxng-secret
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 250m
+              memory: 256Mi
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            periodSeconds: 10
+            timeoutSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            periodSeconds: 20
+            timeoutSeconds: 5
+          securityContext:
+            capabilities:
+              drop: ["ALL"]
+              add: ["CHOWN", "SETGID", "SETUID", "DAC_OVERRIDE"]
+          volumeMounts:
+            - name: settings-template
+              mountPath: /tmp/settings.yml.template
+              subPath: settings.yml.template
+              readOnly: true
+            - name: data
+              mountPath: /etc/searxng
+      volumes:
+        - name: settings-template
+          configMap:
+            name: odysseus-searxng
+        - name: data
+          persistentVolumeClaim:
+            claimName: odysseus-searxng
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: searxng
+  namespace: odysseus
+spec:
+  selector:
+    app.kubernetes.io/instance: odysseus
+    app.kubernetes.io/component: searxng
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ntfy
+  namespace: odysseus
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: odysseus
+      app.kubernetes.io/component: ntfy
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: odysseus
+        app.kubernetes.io/component: ntfy
+    spec:
+      automountServiceAccountToken: false
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/instance: odysseus
+      containers:
+        - name: ntfy
+          image: docker.io/binwiederhier/ntfy:latest
+          imagePullPolicy: IfNotPresent
+          args: ["serve"]
+          ports:
+            - name: http
+              containerPort: 80
+          resources:
+            requests:
+              cpu: 25m
+              memory: 64Mi
+            limits:
+              cpu: 100m
+              memory: 128Mi
+          readinessProbe:
+            httpGet:
+              path: /v1/health
+              port: http
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /v1/health
+              port: http
+            periodSeconds: 20
+          volumeMounts:
+            - name: cache
+              mountPath: /var/cache/ntfy
+      volumes:
+        - name: cache
+          persistentVolumeClaim:
+            claimName: odysseus-ntfy
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ntfy
+  namespace: odysseus
+spec:
+  selector:
+    app.kubernetes.io/instance: odysseus
+    app.kubernetes.io/component: ntfy
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
