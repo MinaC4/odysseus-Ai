@@ -7,7 +7,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/MinaC4/odysseus-Ai.git
-    targetRevision: deploy/odysseus-k3s
+    targetRevision: feature/hephastos-assistant-integration
     path: deploy/k3s/odysseus/manifests
   destination:
     server: https://kubernetes.default.svc

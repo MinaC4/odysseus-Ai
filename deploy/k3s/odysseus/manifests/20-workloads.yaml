@@ -45,12 +45,25 @@ spec:
               mountPath: /data
       containers:
         - name: odysseus
-          image: ghcr.io/odysseus-dev/odysseus@sha256:fdf83124b906a67a3218b20d8e7f22c5514982da4cebfd965019728922f3df2e
+          image: odysseus-ai:hephastos-1
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
               containerPort: 7000
           env:
+            - name: HEPHASTOS_URL
+              value: http://hephastos-backend.hephastos.svc.cluster.local:3000
+            - name: HEPHASTOS_WORKSPACE_OWNER
+              value: admin
+            - name: HEPHASTOS_WORKSPACE_TIMEZONE
+              value: Africa/Cairo
+            - name: HEPHASTOS_BRIDGE_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: hephastos-odysseus-bridge
+                  key: token
+            - name: ODYSSEUS_PRODUCTIVITY_ACTIVE
+              value: "false"
             - name: PUID
               value: "1000"
             - name: PGID
