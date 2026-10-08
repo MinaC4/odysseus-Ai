@@ -1,0 +1,104 @@
+.bookmark-page { --bm-ink: #e5edf3; --bm-muted: #90a1b2; --bm-line: #263442; color: var(--bm-ink); }
+.bookmark-hero { display:flex; justify-content:space-between; gap:24px; padding:12px 4px 30px; border-bottom:1px solid var(--bm-line); margin-bottom:28px; }
+.bookmark-eyebrow { display:flex; align-items:center; gap:9px; color:#68c8ce; font:10px 'JetBrains Mono',monospace; letter-spacing:2px; }
+.bookmark-hero h1 { margin:16px 0 12px; font-size:clamp(26px,3.2vw,42px); font-weight:650; line-height:1.15; letter-spacing:-1.3px; }
+.bookmark-hero h1 span { color:#8ca3b5; }
+.bookmark-hero p { margin:0; font-size:13px; color:var(--bm-muted); }
+.bookmark-hero-side { display:flex; flex-direction:column; justify-content:center; align-items:flex-end; gap:16px; }
+.bookmark-transfer { display:flex; gap:17px; }
+.bookmark-transfer button { display:flex; align-items:center; gap:6px; font-size:11px; color:var(--bm-muted); }
+.bookmark-transfer button:hover { color:#7ae3e8; }
+.bookmark-notice { display:flex; justify-content:space-between; gap:12px; background:#143039; border:1px solid #32545e; padding:12px 16px; margin-bottom:18px; border-radius:6px; font-size:13px; }
+.bookmark-workspace { display:grid; grid-template-columns:210px minmax(0,1fr); gap:32px; }
+.bookmark-navigation { padding-right:20px; border-right:1px solid var(--bm-line); }
+.bookmark-section-label { display:flex; justify-content:space-between; padding:0 10px; margin-bottom:12px; font:10px 'JetBrains Mono',monospace; letter-spacing:1.6px; color:#8497aa; }
+.bookmark-nav-item { width:100%; display:flex; align-items:center; gap:10px; padding:11px 10px; margin:3px 0; border:1px solid transparent; border-radius:5px; color:#a9b7c5; font-size:13px; text-align:left; }
+.bookmark-nav-item>span:not(.bookmark-collection-mark) { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.bookmark-nav-item b { margin-left:auto; padding-left:7px; color:#788fa4; font:11px 'JetBrains Mono',monospace; }
+.bookmark-nav-item:hover { background:#15232f; }
+.bookmark-nav-item.is-active { background:#123039; border-color:#264c55; color:#9ce7e9; }
+.bookmark-nav-item.is-active b { color:#9ce7e9; }
+.bookmark-collections { margin-top:28px; }
+.bookmark-collection-scroll { max-height:420px; overflow-y:auto; }
+.bookmark-collection-mark { display:flex; flex-shrink:0; color:hsl(var(--collection-hue) 40% 68%); }
+.bookmark-nav-empty { padding:10px; color:var(--bm-muted); font-size:12px; line-height:1.6; }
+.bookmark-shortcuts { display:flex; gap:16px; border-top:1px solid var(--bm-line); padding:22px 10px; margin-top:22px; font-size:11px; color:#7b90a3; }
+.bookmark-shortcuts kbd { padding:3px 6px; border:1px solid #354351; border-radius:3px; margin-right:4px; }
+.bookmark-library { min-width:0; }
+.bookmark-toolbar { display:flex; align-items:center; gap:16px; padding-bottom:22px; }
+.bookmark-search { display:flex; align-items:center; flex:1; min-width:180px; gap:10px; border:1px solid #334555; background:#101c27; border-radius:7px; padding:11px 13px; color:#869cae; }
+.bookmark-search:focus-within { border-color:#60cbd0; box-shadow:0 0 0 2px #60cbd014; }
+.bookmark-search input { width:100%; min-width:0; color:var(--bm-ink); background:transparent; border:0; outline:0; font-size:13px; }
+.bookmark-search input::placeholder { color:#8496a7; }
+.bookmark-filter-row { display:flex; align-items:center; gap:10px; }
+.bookmark-filter-row select { max-width:170px; border:0; padding:9px 20px 9px 8px; color:#a6b7c6; background:#101c27; border-radius:4px; font-size:11px; }
+.bookmark-view-switch { display:flex; padding:3px; gap:2px; border:1px solid var(--bm-line); border-radius:5px; }
+.bookmark-view-switch button { display:flex; padding:7px; border-radius:3px; color:#7891a4; }
+.bookmark-view-switch button[aria-pressed=true] { color:#a7e8e9; background:#24404a; }
+.bookmark-results-heading { display:flex; justify-content:space-between; align-items:center; gap:12px; margin:0 0 18px; }
+.bookmark-results-heading>div { display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; }
+.bookmark-results-heading h2 { margin:0; font-size:16px; font-weight:600; }
+.bookmark-results-heading span { font-size:11px; color:#8197aa; }
+.bookmark-results-heading>button { font-size:11px; color:#72cdd2; }
+.bookmark-results-actions { display:flex; align-items:center; gap:14px; }
+.bookmark-results-actions button,.bookmark-select-page { display:inline-flex; align-items:center; gap:6px; font-size:11px; color:#72cdd2; }
+.bookmark-bulk-bar { position:sticky; top:8px; z-index:5; display:flex; align-items:center; flex-wrap:wrap; gap:10px; padding:10px 12px; margin:0 0 12px; border:1px solid #32636c; border-radius:7px; background:#102830f2; box-shadow:0 8px 24px #0005; }
+.bookmark-bulk-bar>span,.bookmark-bulk-bar>button,.bookmark-bulk-move { display:inline-flex; align-items:center; gap:6px; font-size:11px; color:#b7d3dc; }
+.bookmark-bulk-bar>span { margin-right:auto; color:#9ce7e9; font-family:'JetBrains Mono',monospace; }
+.bookmark-bulk-bar button:hover { color:#8ae1e5; }
+.bookmark-bulk-bar .is-danger { color:#eea1aa; }
+.bookmark-bulk-move { gap:6px; }
+.bookmark-bulk-move select { max-width:170px; padding:6px 8px; border:1px solid #34505c; border-radius:4px; color:#b7d3dc; background:#101c27; font-size:11px; }
+.bookmark-bulk-clear { display:flex; padding:5px; }
+.bookmark-records.is-list { border-top:1px solid var(--bm-line); }
+.bookmark-record { display:flex; align-items:flex-start; gap:16px; padding:19px 12px; border-bottom:1px solid var(--bm-line); transition:background .15s; }
+.bookmark-record:hover { background:#12212d; }
+.bookmark-record-symbol { display:flex; align-items:center; justify-content:center; flex-shrink:0; width:42px; height:42px; background:linear-gradient(145deg,#233544,#17232d); border:1px solid #344553; border-radius:9px; color:#bdd1dd; font:12px 'JetBrains Mono',monospace; letter-spacing:.4px; }
+.bookmark-record-symbol img { width:24px; height:24px; object-fit:contain; border-radius:4px; }
+.bookmark-select-record { display:flex; flex:0 0 22px; align-items:center; justify-content:center; width:22px; height:34px; color:#8ba1b1; }
+.bookmark-select-record[aria-pressed=true] { color:#8ae1e5; }
+.is-pinned .bookmark-record-symbol { border-color:#37626a; color:#9dd6d8; }
+.bookmark-record-main { min-width:0; flex:1; }
+.bookmark-record-title { margin:0; font-size:14px; font-weight:600; color:#e4edf3; }
+.bookmark-record-title a { display:inline-flex; align-items:center; gap:8px; max-width:100%; overflow-wrap:anywhere; }
+.bookmark-record-title a svg { flex-shrink:0; color:#7c96a8; }
+.bookmark-record-title a:hover { color:#91e2e5; }
+.bookmark-record-domain { color:#8aa0b2; font:11px 'JetBrains Mono',monospace; margin:5px 0 0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.bookmark-record-note { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; margin:8px 0 0; font-size:12px; line-height:1.5; color:#acbbc8; }
+.bookmark-record-meta { display:flex; gap:11px; flex-wrap:wrap; margin-top:10px; font-size:10px; }
+.bookmark-record-meta button { color:#94c3cd; max-width:100%; overflow-wrap:anywhere; }
+.bookmark-record-meta button:hover { text-decoration:underline; }
+.bookmark-record-meta .bookmark-tag { color:#91a1b1; }
+.bookmark-record-tail { display:flex; align-items:center; gap:5px; flex-shrink:0; }
+.bookmark-record-number { padding:0 10px; font:10px 'JetBrains Mono',monospace; color:#6f8496; }
+.bookmark-icon-button { display:flex; align-items:center; justify-content:center; width:34px; height:34px; border-radius:5px; color:#8095a8; }
+.bookmark-icon-button:hover { background:#243744; color:#d0e4ed; }
+.bookmark-icon-button.is-active { color:#80d6da; }
+.bookmark-records.is-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; }
+.is-grid .bookmark-record { flex-wrap:wrap; padding:19px; border:1px solid var(--bm-line); border-radius:9px; background:#101d28; }
+.is-grid .bookmark-record-main { flex-basis:calc(100% - 60px); }
+.is-grid .bookmark-record-note { display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; white-space:normal; min-height:54px; }
+.is-grid .bookmark-record-tail { width:100%; border-top:1px solid var(--bm-line); padding-top:10px; margin-top:5px; justify-content:flex-end; }
+.is-grid .bookmark-record-number { margin-right:auto; }
+.bookmark-pagination { display:flex; justify-content:space-between; align-items:center; gap:14px; padding:22px 0; font-size:11px; color:#93a8ba; }
+.bookmark-pagination>div { display:flex; align-items:center; gap:12px; }
+.bookmark-pagination button { display:flex; padding:7px; border:1px solid var(--bm-line); border-radius:4px; }
+.bookmark-page button:disabled { opacity:.4; cursor:not-allowed; }
+.bookmark-page button:focus-visible,.bookmark-page a:focus-visible,.bookmark-page select:focus-visible { outline:2px solid #73d7dc; outline-offset:3px; }
+.bookmark-empty { padding:65px 20px; border:1px dashed #344553; text-align:center; border-radius:8px; }
+.bookmark-empty>svg { margin:0 auto 18px; color:#749cae; }
+.bookmark-empty h3 { font-size:18px; margin-bottom:10px; }
+.bookmark-empty p { color:#97adbd; font-size:13px; margin-bottom:22px; }
+.bookmark-details h2 { font-size:22px; line-height:1.4; overflow-wrap:anywhere; margin:12px 0; color:#e4edf3; }
+.bookmark-detail-url { color:#8eb5c2; font:12px 'JetBrains Mono',monospace; overflow-wrap:anywhere; }
+.bookmark-detail-note { margin:20px 0; white-space:pre-wrap; color:#b6c5d1; font-size:14px; line-height:1.8; }
+.bookmark-detail-tags { display:flex; flex-wrap:wrap; gap:8px; margin:20px 0; }
+.bookmark-detail-tags button { padding:5px 8px; border:1px solid #344b58; border-radius:4px; color:#91cfd4; font-size:11px; }
+.bookmark-detail-date { font-size:11px; color:#91a5b5; margin:20px 0; }
+.bookmark-detail-actions { display:flex; flex-wrap:wrap; gap:10px; border-top:1px solid #2a3d4a; padding-top:18px; }
+.bookmark-detail-actions>* { display:flex; gap:7px; align-items:center; padding:9px 12px; border:1px solid #344b58; border-radius:4px; color:#b6d4de; font-size:12px; }
+.bookmark-detail-actions .is-danger { color:#ed939d; margin-left:auto; }
+@media(max-width:1200px) { .bookmark-toolbar { flex-wrap:wrap; } .bookmark-search { flex-basis:100%; } .bookmark-records.is-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media(max-width:800px) { .bookmark-workspace { grid-template-columns:minmax(0,1fr); gap:20px; } .bookmark-navigation { min-width:0; border-right:0; padding:0; } .bookmark-navigation>.bookmark-nav-item { display:inline-flex; width:auto; margin-right:8px; } .bookmark-collections { min-width:0; margin-top:18px; } .bookmark-collection-scroll { display:flex; overflow-x:auto; gap:6px; padding-bottom:5px; } .bookmark-collection-scroll .bookmark-nav-item { width:auto; flex-shrink:0; } .bookmark-shortcuts { display:none; } .bookmark-record { padding:16px 6px; gap:12px; } .bookmark-record-number { display:none; } }
+@media(max-width:520px) { .bookmark-hero { flex-direction:column; padding-bottom:24px; gap:22px; } .bookmark-hero-side { align-items:flex-start; } .bookmark-hero h1 { font-size:32px; } .bookmark-filter-row { width:100%; gap:6px; } .bookmark-filter-row select { min-width:0; max-width:145px; flex:1; } .bookmark-view-switch { margin-left:auto; } .bookmark-records.is-grid { grid-template-columns:1fr; } .bookmark-record-symbol { width:34px; height:34px; font-size:10px; } .bookmark-record-tail { flex-direction:column; gap:0; } .is-grid .bookmark-record-tail { flex-direction:row; } .bookmark-record-title { font-size:13px; } .bookmark-pagination { flex-wrap:wrap; } .bookmark-bulk-bar { gap:8px; } .bookmark-bulk-bar>span { flex-basis:100%; } .bookmark-bulk-move { flex:1 1 100%; } .bookmark-bulk-move select { max-width:none; flex:1; } }
+@media(prefers-reduced-motion:reduce) { .bookmark-record { transition:none; } }

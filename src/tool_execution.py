@@ -1964,6 +1964,12 @@ async def _execute_tool_block_impl(
 
     tool = block.tool_type
     content = block.content
+    from services.hephastos import is_linked_assistant, ASSISTANT_TOOLS
+    try:
+        if is_linked_assistant(owner, session_id) and tool not in ASSISTANT_TOOLS:
+            return f"{tool}: BLOCKED", {"error": "The connected personal assistant cannot run infrastructure, code, generic API or delegated-session operations.", "exit_code": 1}
+    except Exception:
+        return f"{tool}: BLOCKED", {"error": "Assistant authority could not be verified.", "exit_code": 1}
 
     # The block/disable gates below must match every policy-equivalent
     # spelling of the tool name (bare email names alias their mcp__email__

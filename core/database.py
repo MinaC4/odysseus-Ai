@@ -702,6 +702,36 @@ class Webhook(TimestampMixin, Base):
     last_error = Column(String, nullable=True)
 
 
+class ProductivityRecord(TimestampMixin, Base):
+    """Imported personal workspace records; original IDs and contents remain intact."""
+    __tablename__ = "productivity_records"
+    owner = Column(String, primary_key=True)
+    collection = Column(String, primary_key=True)
+    record_id = Column(String, primary_key=True)
+    payload = Column(JSON, nullable=False)
+
+
+class ProductivityProposal(Base):
+    __tablename__ = "productivity_proposals"
+    id = Column(String, primary_key=True)
+    owner = Column(String, nullable=False, index=True)
+    collection = Column(String, nullable=False)
+    operation = Column(JSON, nullable=False)
+    revision = Column(String, nullable=False)
+    status = Column(String, nullable=False, default="pending")
+    created_at = Column(DateTime, default=utcnow_naive, nullable=False)
+
+
+class ProductivityEvent(Base):
+    __tablename__ = "productivity_events"
+    id = Column(String, primary_key=True)
+    owner = Column(String, nullable=False, index=True)
+    action = Column(String, nullable=False)
+    collection = Column(String, nullable=False)
+    record_ids = Column(JSON, nullable=False)
+    created_at = Column(DateTime, default=utcnow_naive, nullable=False)
+
+
 class UserTool(TimestampMixin, Base):
     """User-created sandboxed mini-apps/tools."""
     __tablename__ = "user_tools"

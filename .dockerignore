@@ -44,6 +44,9 @@ compound.config.json
 search_analytics.json
 **/search_analytics.json
 tests/
+!tests/
+tests/*
+!tests/test_hephastos_workspace_integration.py
 api/
 *.log
 *.error.log

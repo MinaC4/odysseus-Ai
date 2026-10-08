@@ -21,6 +21,8 @@ from src.text_scanning import has_prefixed_token_match
 
 
 FAMILY_TOOLS = {
+    "hephastos": frozenset({"read_hephastos"}),
+    "productivity": frozenset({"manage_productivity"}),
     "calendar": frozenset({"manage_calendar"}),
     "notes": frozenset({"manage_notes"}),
     "tasks": frozenset({"manage_tasks"}),
@@ -105,6 +107,8 @@ def _mentions_under_budget(text: str) -> bool:
                 return True
     return False
 _FAMILY_WORDS = {
+    "hephastos": r"\b(?:hephastos|hephaestus|kubernetes|clusters?|pods?|workloads?)\b|هيفاستوس|الكلاستر|البودات|الداشبورد",
+    "productivity": r"\b(?:bookmarks?|learning tracker|day organizer|idea inbox|scripts library|file sharing|personal workspace)\b|الإنتاجية|الاشارات المرجعية|منظم اليوم|مكتبة السكريبتات|التعلم|كورسات|مذاكرة|أفكاري|افكاري|الأفكار|الافكار|روابط|بوك.?مارك|سكربت|سكريبت|تنظيم.?اليوم|مهامي|مهام.?اليوم|مشاركة.?الملفات",
     "calendar": r"\b(?:calendar|calender|events?|appointments?|meetings?|agenda)\b",
     "notes": r"\b(?:notes?|checklists?|groceries|remind\s+me)\b",
     "tasks": r"\b(?:tasks?|todos?|schedul(?:ed|d)\s+jobs?|automations?)\b",

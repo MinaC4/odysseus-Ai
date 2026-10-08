@@ -21,6 +21,8 @@ logger = logging.getLogger(__name__)
 from .subprocess_tools import BashTool, HostShellTool, PythonTool
 from .web_tools import WebSearchTool, WebFetchTool, PdfExtractTool, PrivateBrowserTool, YouTubeTool
 from .weather_tools import WeatherTool
+from .hephastos_tools import HephastosTool
+from .productivity_tools import ProductivityTool
 from .media_tools import ExtractTextTool, InspectMediaTool, TranscribeMediaTool
 from .filesystem_tools import ReadFileTool, WriteFileTool, EditFileTool, ApplyPatchTool, LsTool, GlobTool, GrepTool, GetWorkspaceTool
 from .coding_tools import TodoWriteTool
@@ -41,6 +43,8 @@ TOOL_HANDLERS = {
     "python": PythonTool().execute,
     "web_search": WebSearchTool().execute,
     "get_weather": WeatherTool().execute,
+    "read_hephastos": HephastosTool().execute,
+    "manage_productivity": ProductivityTool().execute,
     "web_fetch": WebFetchTool().execute,
     "pdf_extract": PdfExtractTool().execute,
     "youtube_tool": YouTubeTool().execute,

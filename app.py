@@ -184,6 +184,7 @@ _TIMEOUT_EXEMPT_PREFIXES = (
     "/api/chat",            # streaming
     "/api/shell/stream",    # SSE
     "/api/research",        # multi-minute jobs
+    "/api/productivity-scripts/run", # human-only, per-device SSH timeout
     "/api/model/download",  # tmux setup may run pip installs
     "/api/model/probe",     # SSE; iterates models with up to 8s timeout each
     "/api/model-endpoints", # /probe sub-route also iterates models
@@ -794,6 +795,12 @@ app.include_router(setup_task_routes(task_scheduler))
 
 from routes.assistant_routes import setup_assistant_routes
 app.include_router(setup_assistant_routes(task_scheduler))
+from routes.hephastos_routes import router as hephastos_router
+app.include_router(hephastos_router)
+from routes.productivity_routes import router as productivity_router
+app.include_router(productivity_router)
+from routes.productivity_script_routes import router as productivity_script_router
+app.include_router(productivity_script_router)
 
 # Calendar (CalDAV)
 from routes.calendar_routes import setup_calendar_routes
@@ -1311,6 +1318,9 @@ async def _startup_event():
     _tasks_inprocess = os.environ.get("ODYSSEUS_INPROCESS_TASKS", "1").strip().lower()
     if _tasks_inprocess not in ("0", "false", "no", "off", ""):
         await task_scheduler.start()
+        if os.environ.get('ODYSSEUS_PRODUCTIVITY_ACTIVE')=='true':
+            from services.productivity_reminders import reminder_loop
+            app.state.productivity_reminder_task=asyncio.create_task(reminder_loop(task_scheduler))
     else:
         logger.info(
             "In-process task scheduler disabled (ODYSSEUS_INPROCESS_TASKS=0); "
@@ -1376,6 +1386,11 @@ async def _shutdown_event():
         except asyncio.CancelledError:
             pass
     # Stop task scheduler (no-op if it never started under the gate)
+    reminder_task=getattr(app.state,'productivity_reminder_task',None)
+    if reminder_task:
+        reminder_task.cancel()
+        try:await reminder_task
+        except asyncio.CancelledError:pass
     try:
         await task_scheduler.stop()
     except Exception:

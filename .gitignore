@@ -38,6 +38,7 @@ logs/
 *.sqlite3
 
 # Node
+/static/productivity/
 node_modules/
 services/node_modules/
 services/data/

@@ -1,0 +1,22 @@
+/* Keep feature layouts while matching the surrounding Odysseus theme. */
+.personal-workspace { --planner-text:var(--fg); --planner-muted:var(--color-muted,#99a0aa); --planner-line:var(--border);
+  --planner-accent:var(--accent-primary,var(--fg)); --planner-surface:var(--panel); --bm-ink:var(--fg); --bm-line:var(--border);
+  --bm-muted:var(--color-muted,#99a0aa); --learning-line:var(--border); --learning-muted:var(--color-muted,#99a0aa);
+  --fs-border:var(--border); --fs-text:var(--fg); --fs-muted:var(--color-muted,#99a0aa); --fs-accent:var(--accent-primary,var(--fg));
+  --idea-border:var(--border); --idea-accent:var(--accent-primary,var(--fg)); }
+.day-planner,.bookmark-page,.learning-workspace,.fs-page,.idea-workspace,.scripts-workspace {
+  background:var(--bg)!important; color:var(--fg)!important; font-family:inherit!important;
+  --planner-text:var(--fg); --planner-muted:var(--color-muted,#99a0aa); --planner-line:var(--border);
+  --planner-accent:var(--accent-primary,var(--fg)); --planner-surface:var(--panel); --bm-ink:var(--fg); --bm-line:var(--border);
+  --bm-muted:var(--color-muted,#99a0aa); --learning-line:var(--border); --learning-muted:var(--color-muted,#99a0aa);
+  --fs-border:var(--border); --fs-text:var(--fg); --fs-muted:var(--color-muted,#99a0aa); --fs-accent:var(--accent-primary,var(--fg));
+  --idea-border:var(--border); --idea-accent:var(--accent-primary,var(--fg));
+}
+.day-planner input,.day-planner textarea,.day-planner select,.bookmark-page input,.bookmark-page select,
+.learning-workspace input,.learning-workspace textarea,.learning-workspace select,.fs-page input,.idea-workspace input {
+  background:var(--panel)!important; color:var(--fg)!important; border-color:var(--border)!important;
+}
+.day-planner .planner-detail-modal,.bookmark-card,.learning-card,.idea-card,.fs-card,.scripts-card {
+  background:var(--panel)!important; border-color:var(--border)!important; box-shadow:none!important; border-radius:10px;
+}
+.personal-workspace h1,.personal-workspace h2,.personal-workspace h3 { font-family:inherit!important; letter-spacing:normal!important; }

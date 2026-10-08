@@ -3369,7 +3369,8 @@ async function _pollTaskNotifications() {
     const notes = data.notifications || [];
     for (const n of notes) {
       const ok = n.status === 'success';
-      if (ok) {
+      const planner = (n.task_id || '').startsWith('planner:');
+      if (ok && !planner) {
         const completedOpen = _open && document.querySelector('.tasks-tab.active[data-tab="completed"]');
         if (completedOpen) {
           _setTaskCompletionPending(false);
@@ -3386,7 +3387,8 @@ async function _pollTaskNotifications() {
         let fired = false;
         try {
           if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
-            new Notification(title, { body: n.body, tag: 'task-' + (n.task_id || title), icon: '/static/favicon.ico' });
+            const notification = new Notification(title, { body: n.body, tag: 'task-' + (n.task_id || title), icon: '/static/favicon.ico' });
+            if (planner) notification.onclick=()=>{ window.focus();window.dispatchEvent(new CustomEvent('odysseus:open-productivity',{detail:{page:'day'}}));notification.close(); };
             fired = true;
           }
         } catch (_) {}
