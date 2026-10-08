@@ -43,8 +43,11 @@ def connection(owner):
     return base, token
 
 
-async def read_hephastos(capability, cluster_id=None, *, owner):
+async def read_hephastos(capability, cluster_id=None, *, owner, project_id=None, file_path=None, start_line=1,character_offset=0):
     require_owner(owner)
+    if capability == 'knowledge':
+        from services.project_knowledge import read_knowledge
+        return read_knowledge(owner,project_id,file_path,start_line,character_offset)
     if capability == 'context':
         from services.hephastos_context import work_context
         return work_context(owner)

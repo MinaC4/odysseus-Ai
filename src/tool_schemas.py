@@ -298,11 +298,12 @@ FUNCTION_TOOL_SCHEMAS = [
         "type": "function",
         "function": {
             "name": "read_hephastos",
-            "description": "Read Hephastos and the owner's work context. Read context to understand their projects and preferences; saved memory is not live runtime evidence. List clusters then select explicit cluster_id for inventory; use projects/tools for current metadata. Cite source and observedAt. No deployments, shell, exec, credentials or infrastructure mutations.",
+            "description": "Read Hephastos and the owner's work context. Use context for work facts, knowledge for saved project dossiers, discover project_id then read exact file_path in bounded start_line pages. Saved source/memory is not live runtime evidence; excluded files are unknown. List clusters then select cluster_id for current inventory; projects/tasks/tools provide current metadata. Cite source/revision/date. No deployments, shell, exec, credentials or infrastructure mutations.",
             "parameters": {
                 "type": "object", "additionalProperties": False,
-                "properties": {"capability": {"type": "string", "enum": ["context", "clusters", "inventory", "projects", "tasks", "tools"]},
-                               "cluster_id": {"type": "string"}},
+                "properties": {"capability": {"type": "string", "enum": ["context", "knowledge", "clusters", "inventory", "projects", "tasks", "tools"]},
+                               "cluster_id": {"type": "string"},"project_id":{"type":"string","description":"For knowledge: discover the exact ID from the knowledge index first."},
+                               "file_path":{"type":"string","description":"For knowledge: exact retained path from the project dossier."},"start_line":{"type":"integer","minimum":1},"character_offset":{"type":"integer","minimum":0,"description":"For a truncated source window, keep start_line unchanged and use nextCharacterOffset. Reset to zero when advancing to a new line window."}},
                 "required": ["capability"]
             }
         }

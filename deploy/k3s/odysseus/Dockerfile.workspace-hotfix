@@ -1,0 +1,10 @@
+# Small overlay of the previously imported/tested integration image.
+FROM odysseus-ai:hephastos-2
+WORKDIR /app
+COPY static/js/productivity.js ./static/js/productivity.js
+COPY services/hephastos.py services/hephastos_context.py services/project_knowledge.py ./services/
+COPY routes/hephastos_routes.py ./routes/hephastos_routes.py
+COPY src/tool_schemas.py ./src/tool_schemas.py
+COPY src/agent_tools/hephastos_tools.py ./src/agent_tools/hephastos_tools.py
+COPY scripts/sync_hephastos_knowledge.py ./scripts/sync_hephastos_knowledge.py
+COPY tests/test_hephastos_workspace_integration.py ./integration-tests/test_workspace.py

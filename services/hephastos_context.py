@@ -48,5 +48,9 @@ def work_context(owner):
     from src.memory import MemoryManager
     require_owner(owner)
     entries=MemoryManager(DATA_DIR).load(owner=owner)
+    from core.database import SessionLocal,ProductivityRecord
+    with SessionLocal() as db:
+        dossiers=db.query(ProductivityRecord).filter_by(owner=owner,collection='project_knowledge').all()
+        references=[f"Project {row.payload['title']}: {row.payload.get('repository') or 'repository not linked'}; durable technical knowledge ID {row.record_id}. Use read_hephastos(knowledge, project_id=ID) for documentation, architecture, dependencies and exact retained source files. Saved at {row.payload['observedAt']}; not live runtime." for row in dossiers]
     return {'source':'odysseus.owner-memory','observedAt':datetime.now(timezone.utc).isoformat(),
-            'kind':'saved-context-not-live-runtime','facts':[entry['text'][:1500] for entry in entries if entry.get('source')==SOURCE][:20]}
+            'kind':'saved-context-not-live-runtime','facts':([entry['text'][:1500] for entry in entries if entry.get('source')==SOURCE]+references)[:30]}

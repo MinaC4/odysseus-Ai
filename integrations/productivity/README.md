@@ -44,3 +44,30 @@ image import and Hephastos scripts/activate-personal-workspace.sh. Still pending
 production CRUD acceptance, reminder delivery across restarts, configured SSH
 devices and off-device recovery. Infrastructure remains deliberately read-only;
 this is not unrestricted control of every Hephastos dashboard API.
+
+## Scroll regression and durable source knowledge (2026-10-09)
+
+The fullscreen host previously had inline overflow:hidden; content exceeded its
+576px viewport but wheel scrolling left scrollTop at zero. Its shared scroll
+region is now overflow:auto, keyboard-focusable, and contains overscroll. The
+isolated browser regression verifies wheel, PageDown, mobile viewport scrolling
+and real dialog input/save. Run tests/e2e/productivity-scroll.cjs against an
+isolated long-list fixture on 127.0.0.1:17001, never live user data.
+
+Project dossiers are stored separately in owner-scoped SQLite records. A human
+sync backs up the DB, reads existing Hephastos archive catalogs/documents through
+the authenticated read-only bridge, and commits a capture audit. It does not
+overwrite personal workspace records or the concurrently used memory.json.
+Work context derives project references from this database. The assistant can
+discover projects, inspect documents/architecture/dependencies and read exact
+retained source files in line and character-offset pages. Exclusions, catalog
+coverage, saved revision and dates remain explicit; saved source is never live
+runtime evidence. Private-key material, classified files and detected sensitive
+text are excluded/redacted; heuristic redaction is not a perfect secret scan.
+
+Not every archive entry has source. Live inspection found saved repository
+catalogs for Mal3aby, Eshtry-Mny and Boutique; other entries can be metadata-only.
+Do not claim complete semantic understanding of every project or every file.
+No repository code is executed, and assistant infrastructure privileges do not
+change. Candidate images: backend112 and Odysseus hephastos-3; publish them only
+after import, then run the updated activation script and review its capture report.

@@ -35,6 +35,26 @@ class WorkspaceIntegrationTests(unittest.TestCase):
         for url in ['javascript:alert(1)','https://user:password@example.org','file:///etc/passwd']:
             with self.assertRaises(ValueError):query_collection('admin','quick_links',{'action':'insert','values':{'title':'Unsafe','url':url}})
 
+    def test_project_knowledge_is_persistent_bounded_and_owner_scoped(self):
+        from services.project_knowledge import save_dossiers,read_knowledge
+        dossier={'id':'project-test','title':'Project','source':'hephastos.project-archive','observedAt':'2026-10-09',
+                 'catalog':{'revision':'abc','coverage':{'complete':False}},'contents':{'src/main.py':{'content':'\n'.join(str(i) for i in range(350))},'long.txt':{'content':'a'*17000}}}
+        with patch.dict(os.environ,{'HEPHASTOS_WORKSPACE_OWNER':'admin'}):
+            save_dossiers('admin',[dossier])
+            self.assertTrue(read_knowledge('admin')['available'])
+            saved=read_knowledge('admin','project-test','src/main.py',201)
+            self.assertEqual(saved['startLine'],201)
+            self.assertEqual(saved['totalLines'],350)
+            self.assertTrue(saved['text'].startswith('200\n'))
+            self.assertEqual(read_knowledge('admin','project-test')['revision'],'abc')
+            self.assertTrue(read_knowledge('admin','project-test')['truncated'])
+            first=read_knowledge('admin','project-test','long.txt')
+            last=read_knowledge('admin','project-test','long.txt',first['nextLine'],first['nextCharacterOffset'])
+            self.assertEqual(first['text']+last['text'],'a'*17000)
+            with self.assertRaises(PermissionError):read_knowledge('other','project-test')
+            with self.assertRaises(ValueError):read_knowledge('admin','project-test','../../private')
+            with self.assertRaises(ValueError):query_collection('admin','project_knowledge',{'action':'delete'})
+
     def test_work_memory_is_idempotent_and_owner_scoped(self):
         import tempfile
         from src.memory import MemoryManager

@@ -45,7 +45,7 @@ spec:
               mountPath: /data
       containers:
         - name: odysseus
-          image: odysseus-ai:hephastos-2
+          image: odysseus-ai:hephastos-3
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
