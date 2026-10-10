@@ -286,12 +286,15 @@ def normalized_native_function_argument_error(
 # ---------------------------------------------------------------------------
 FUNCTION_TOOL_SCHEMAS = [
     {"type": "function", "function": {"name": "manage_productivity",
-      "description": "Read personal Day Organizer, Ideas, Scripts, Learning, Bookmarks, Files and Quick Launcher. Propose changes for human approval in Personal workspace. Never claim an edit was applied until approved. Binary file contents are excluded.",
+      "description": "Manage the owner's Day Organizer (tasks and daily notes), Ideas, Scripts Library, Learning Tracker, Bookmarks, File Sharing and Quick Launcher. Use list/get before editing when you need the current record or exact ID. Create/update/delete make the requested change directly in the signed-in owner's workspace; report success only from the returned saved/deleted result. Calendar items need title and date (YYYY-MM-DD), plus local 24-hour time (HH:MM) for scheduled tasks. Ideas use title, description, status, priority, tags and link. Daily entries use date as their record ID. Update/delete require one exact record_id. List is paginated (limit/offset). File bytes and certificate image bytes are never returned or written by this tool; file metadata and text commands are supported. For ambiguous dates or targets, ask instead of guessing. `propose` remains available when the user asks to review a draft change first.",
       "parameters": {"type": "object", "properties": {
-        "action": {"type": "string", "enum": ["list", "get", "propose"]},
-        "record_id": {"type": "string", "description": "Exact record ID (or date for daily notes) when action=get; first discover IDs with list."},
+        "action": {"type": "string", "enum": ["list", "get", "create", "update", "delete", "propose"]},
+        "record_id": {"type": "string", "description": "Exact ID for get/update/delete, or YYYY-MM-DD for daily_entries."},
         "collection": {"type": "string", "enum": ["calendar_items", "daily_entries", "ideas", "scripts", "learning_items", "learning_materials", "bookmarks", "shared_items", "shared_item_files", "quick_links"]},
-        "filters": {"type": "array", "items": {"type": "object"}},
+        "filters": {"type": "array", "items": {"type": "object"}, "description": "Optional filters for list; do not use for mutation targets."},
+        "limit": {"type": "integer", "description": "List page size (1-50; default 20)."},
+        "offset": {"type": "integer", "description": "List starting offset; continue from next_offset in the previous result."},
+        "values": {"type": "object", "description": "Record fields to save for create, or fields to change for update. Preserve the page's existing field names."},
         "operation": {"type": "object", "description": "Proposed action insert/update/delete/upsert, values, and explicit filters [{field:id,op:eq,value:record-id}]. Creates a proposal only."}
       }, "required": ["action", "collection"]}}},
     {

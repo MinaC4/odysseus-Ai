@@ -111,7 +111,23 @@ function FilePreview({ file, onDownload, onPrevious, onNext, thumbnail = false }
   const { id, item_id: itemId, title: fileTitle } = file;
   const [preview, setPreview] = useState<{ url?: string; text?: string; error?: string; unsupported?: boolean } | null>(null);
   const [retry, setRetry] = useState(0);
+  const [thumbnailVisible, setThumbnailVisible] = useState(!thumbnail);
+  const thumbnailRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
+    if (!thumbnail) { setThumbnailVisible(true); return; }
+    setThumbnailVisible(false);
+    const node = thumbnailRef.current;
+    if (!node || typeof IntersectionObserver === 'undefined') { setThumbnailVisible(true); return; }
+    const observer = new IntersectionObserver(entries => {
+      if (!entries.some(entry => entry.isIntersecting)) return;
+      observer.disconnect();
+      setThumbnailVisible(true);
+    });
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [id, thumbnail]);
+  useEffect(() => {
+    if (thumbnail && !thumbnailVisible) return;
     let alive = true, url: string | undefined;
     setPreview(null);
     void readFile({ id, item_id: itemId, title: fileTitle }).then(({ record, bytes }) => {
@@ -122,8 +138,8 @@ function FilePreview({ file, onDownload, onPrevious, onNext, thumbnail = false }
       else setPreview({ unsupported: true });
     }).catch(error => { if (alive) setPreview({ error: messageOf(error) }); });
     return () => { alive = false; if (url) URL.revokeObjectURL(url); };
-  }, [id, itemId, fileTitle, thumbnail, retry]);
-  if (thumbnail) return <div className="fs-thumbnail">{preview?.url ? <img src={preview.url} alt={file.file_name ?? file.title ?? 'Image'} loading="lazy" /> : <Image size={32} />}</div>;
+  }, [id, itemId, fileTitle, thumbnail, thumbnailVisible, retry]);
+  if (thumbnail) return <div ref={thumbnailRef} className="fs-thumbnail">{preview?.url ? <img src={preview.url} alt={file.file_name ?? file.title ?? 'Image'} loading="lazy" /> : <Image size={32} />}</div>;
   if (!preview) return <div className="fs-preview-placeholder" role="status"><Loader2 size={24} className="animate-spin" />Loading preview…</div>;
   if (preview.error) return <div className="fs-preview-placeholder" role="alert"><p>{preview.error}</p><button className="fs-button" onClick={() => setRetry(value => value + 1)}>Retry preview</button></div>;
   if (preview.url) return <ImageViewer src={preview.url} alt={file.file_name ?? file.title ?? 'Image'} onDownload={onDownload ?? (() => {})} onPrevious={onPrevious} onNext={onNext} />;

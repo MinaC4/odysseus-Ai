@@ -55,6 +55,8 @@ ALWAYS_AVAILABLE = frozenset({
     # of topic. Without this, RAG drops it and the agent falls back to
     # app_api /api/memory/add which fails with 422 on first attempt.
     "manage_memory",
+    # Personal dashboard edits are a core assistant action across turns.
+    "manage_productivity",
     # Ask the user a multiple-choice question for a decision/clarification.
     # Always reachable so the agent can pause and ask at any point.
     "ask_user",
@@ -68,6 +70,12 @@ ALWAYS_AVAILABLE = frozenset({
 # another domain (for example email) ranks higher.  Keep these phrases about
 # product concepts, not particular prompts or entities.
 NON_LATIN_LITERAL_TOOL_HINTS = {
+    "manage_productivity": (
+        "منظم اليوم", "مهمة في منظم اليوم", "مهامي الشخصية", "ضيف تاسك", "ضيف مهمة",
+        "حط تاسك", "جدول مهمة", "تاسك في المعاد", "أضف فكرة", "إضافة فكرة", "ضيفلي فكرة",
+        "سجل فكرة", "احفظ فكرة", "الأفكار", "مكتبة السكريبتات", "متابعة التعلم",
+        "الملفات المشتركة", "الروابط السريعة",
+    ),
     "manage_tasks": (
         "定时任务", "计划任务", "排程任务", "定時任務", "計劃任務", "排程任務",
         "スケジュール済みタスク", "定期タスク", "予約タスク",
@@ -87,7 +95,7 @@ ASSISTANT_ALWAYS_AVAILABLE = frozenset({
     "list_email_accounts", "list_emails", "search_emails", "read_email", "scan_email_unsubscribes", "scan_spam", "unsubscribe_email", "send_email", "reply_to_email", "draft_email", "draft_email_reply", "ai_draft_email_reply",
     "bulk_email", "archive_email", "delete_email", "mark_email_read", "download_attachment", "block_sender", "manage_email_state",
     "manage_calendar", "manage_notes", "manage_tasks",
-    "manage_memory", "web_search", "read_file",
+    "manage_memory", "manage_productivity", "web_search", "read_file",
     "create_document", "update_document",
     "resolve_contact", "search_chats",
     "api_call",  # For Miniflux/Gitea/Linkding/etc. integrations
@@ -136,6 +144,7 @@ BUILTIN_TOOL_DESCRIPTIONS: Dict[str, str] = {
     "list_models": "List all available AI models and their endpoints.",
     "manage_session": "Chat management: rename, archive, delete, or fork chats (the UI calls these 'chats'; internally 'sessions'). Use for 'rename my chats', 'rename this chat', 'archive/delete a chat'.",
     "manage_memory": "Memory management: list, add, edit, delete, or search persistent memories. For facts about the USER (their name, preferences, where they live). NOT for info about ANOTHER person — addresses, phones, emails belonging to a contact go in manage_contact, not memory.",
+    "manage_productivity": "Manage the owner's personal dashboard pages: Day Organizer tasks and daily notes, Ideas, Scripts Library, Learning Tracker, Bookmarks, File Sharing, and Quick Launcher (منظم اليوم، المهام، الأفكار، السكريبتات، التعلم، المفضلة، الملفات، الروابط السريعة). Read, create, update or delete owner-scoped records; use exact record IDs for edits/deletes. Use for requests in Arabic or English to schedule a personal task, capture an idea, update learning progress, save a bookmark/shortcut, manage script text or file metadata. Binary attachments stay private and are not exposed to the assistant.",
     "manage_skills": "Skill management: add, update, publish, or search reusable skills/presets.",
     "manage_tasks": "Scheduled task management: list, create, edit, delete, pause, resume, or run recurring and one-off future tasks.",
     "manage_endpoints": "Endpoint management: list, add, delete, enable, or disable model API endpoints.",

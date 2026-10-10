@@ -169,6 +169,12 @@ _register(
     ToolEffect.WRITE_PRIVATE,
 )
 _register(
+    {"manage_productivity"},
+    ToolEffect.READ_PRIVATE,
+    ToolEffect.WRITE_PRIVATE,
+    result_integrity=ResultIntegrity.EXTERNAL_UNTRUSTED,
+)
+_register(
     {
         "ai_draft_email_reply",
         "create_session",
@@ -340,6 +346,7 @@ _PRIVATE_ACTION_READS: Mapping[str, frozenset[str]] = MappingProxyType(
         "manage_session": frozenset({"list", "switch", "open", "select", "view"}),
         "manage_skills": frozenset({"list", "index", "view", "view_ref", "search"}),
         "manage_tasks": frozenset({"list"}),
+        "manage_productivity": frozenset({"list", "get"}),
         "manage_email_state": frozenset({"list_blocked"}),
         "manage_endpoints": frozenset({"list"}),
         "manage_mcp": frozenset({"list", "list_tools"}),
@@ -373,6 +380,7 @@ _PRIVATE_ACTION_WRITES: Mapping[str, frozenset[str]] = MappingProxyType(
         ),
         "manage_skills": frozenset({"add", "edit", "patch", "publish", "delete"}),
         "manage_tasks": frozenset({"create", "edit", "delete", "pause", "resume", "run"}),
+        "manage_productivity": frozenset({"create", "update", "delete", "propose"}),
         "manage_email_state": frozenset(
             {
                 "favorite",
@@ -410,6 +418,7 @@ _ACTION_DESTRUCTIVE: Mapping[str, frozenset[str]] = MappingProxyType(
         "manage_settings": frozenset({"delete", "reset"}),
         "manage_skills": frozenset({"delete"}),
         "manage_tasks": frozenset({"delete"}),
+        "manage_productivity": frozenset({"delete"}),
         "manage_tokens": frozenset({"delete"}),
         "manage_webhooks": frozenset({"delete"}),
     }

@@ -14,10 +14,13 @@ Records retain original IDs and JSON fields, including uploaded file contents.
 The migration script takes a SQLite backup, compares two source captures, then
 verifies a SHA-256 digest of the saved records. It does not delete source data.
 
-`manage_productivity` reads bounded records or creates a durable edit proposal.
-Only an authenticated human can approve it; approvals are owner-bound, single-use,
-expire after 30 minutes and reject changes to the reviewed records. Record writes
-and audit events commit in the same transaction.
+`manage_productivity` reads bounded records and performs owner-scoped create,
+update and delete operations for the seven pages. Updates and deletes target one
+exact record ID; file and certificate image bytes stay outside the tool. It can
+also create a durable proposal when the user asks to review a change first.
+Proposal approvals are owner-bound, single-use, expire after 30 minutes and
+reject changes to the reviewed records. Record writes and audit events commit in
+the same transaction.
 
 Remote execution retains explicit code/version/target review and pinned SSH host
 verification. It is human-admin-only, never available to the connected assistant.

@@ -183,16 +183,9 @@ function ProgressRail({ value, color }: { value: number; color: string }) {
   return <RadioBar segments={10} value={value / 100} color={color} height={6} />;
 }
 
-function CertThumb({ item }: { item: LearningItem }) {
-  if (!item.image_mime_type || !item.image_base64) return null;
-  return (
-    <img
-      src={`data:${item.image_mime_type};base64,${item.image_base64}`}
-      alt="certificate"
-      className="lp-cert object-cover"
-      loading="lazy"
-    />
-  );
+function CertThumb({ item, imageBase64 }: { item: LearningItem; imageBase64: string | null }) {
+  if (!item.image_mime_type || !imageBase64) return null;
+  return <img src={`data:${item.image_mime_type};base64,${imageBase64}`} alt="certificate" className="lp-cert object-cover" loading="lazy" />;
 }
 
 function LearningCard({
@@ -228,8 +221,41 @@ function LearningCard({
   onDragEnd?: () => void;
   isDragging?: boolean;
 }) {
+  const certificateRef = useRef<HTMLDivElement>(null);
+  const [certificateImage, setCertificateImage] = useState(item.image_base64 ?? null);
+  useEffect(() => {
+    if (item.image_base64) { setCertificateImage(item.image_base64); return; }
+    setCertificateImage(null);
+    if (!item.image_mime_type || !certificateRef.current) return;
+    let active = true;
+    const load = async () => {
+      const { data } = await supabase.from('learning_items').select('image_base64').eq('id', item.id).single();
+      if (active && data?.image_base64) setCertificateImage(data.image_base64 as string);
+    };
+    if (typeof IntersectionObserver === 'undefined') void load();
+    else {
+      const observer = new IntersectionObserver(entries => {
+        if (!entries.some(entry => entry.isIntersecting)) return;
+        observer.disconnect();
+        void load();
+      });
+      observer.observe(certificateRef.current);
+      return () => { active = false; observer.disconnect(); };
+    }
+    return () => { active = false; };
+  }, [item.id, item.image_mime_type, item.image_base64]);
   const catC = CATEGORY_COLOR[item.category] ?? '#5d7f88';
   const stop = (e: React.MouseEvent) => e.stopPropagation();
+  const openCertificate = async (event: React.MouseEvent) => {
+    event.stopPropagation();
+    let image = certificateImage;
+    if (!image) {
+      const { data } = await supabase.from('learning_items').select('image_base64').eq('id', item.id).single();
+      image = data?.image_base64 as string | null;
+      if (image) setCertificateImage(image);
+    }
+    if (image) onCertClick?.({ ...item, image_base64: image });
+  };
   return (
     <div
       draggable={draggable}
@@ -243,7 +269,7 @@ function LearningCard({
     >
       <div className="lp-rail" />
       <div className="flex items-start gap-2">
-        {compact && <CertThumb item={item} />}
+        {compact && item.image_mime_type && <div ref={certificateRef}><CertThumb item={item} imageBase64={certificateImage} /></div>}
         <div className="min-w-0 flex-1">
           <div className="flex items-center justify-between gap-1">
             <span className="flex items-center gap-1 min-w-0">
@@ -275,11 +301,11 @@ function LearningCard({
         </div>
       </div>
       {item.provider && <span className="mt-1 block font-mono text-xs text-text-muted">{item.provider}</span>}
-      {!compact && item.status === 'completed' && item.image_base64 && (
-        <div className="relative mt-2 overflow-hidden border" style={{ borderColor: 'rgba(74,222,128,0.4)', background: 'rgba(4,8,12,0.6)' }} title="Course certificate">
+      {!compact && item.status === 'completed' && item.image_mime_type && (
+        <div ref={certificateRef} className="relative mt-2 overflow-hidden border" style={{ borderColor: 'rgba(74,222,128,0.4)', background: 'rgba(4,8,12,0.6)' }} title="Course certificate">
           {/* full certificate at natural aspect ratio — no fixed height, no empty space */}
-          <div className="relative w-full cursor-zoom-in" onClick={(e) => { e.stopPropagation(); onCertClick?.(item); }} title="Click to view certificate full size">
-            <img src={`data:${item.image_mime_type};base64,${item.image_base64}`} alt={`${item.title} certificate`} className="block w-full h-auto object-contain transition-opacity hover:opacity-90" loading="lazy" />
+          <div className="relative w-full cursor-zoom-in" onClick={event => void openCertificate(event)} title="Click to view certificate full size">
+            {certificateImage && <img src={`data:${item.image_mime_type};base64,${certificateImage}`} alt={`${item.title} certificate`} className="block w-full h-auto object-contain transition-opacity hover:opacity-90" loading="lazy" />}
             <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-center justify-between gap-1.5 px-2 pb-1.5" style={{ background: 'linear-gradient(180deg, transparent, rgba(4,8,12,0.92))' }}>
               <span className="inline-flex items-center gap-1 font-mono text-[10px] font-bold tracking-wider" style={{ color: '#4ade80', border: '1px solid rgba(74,222,128,0.55)', background: 'rgba(4,8,12,0.85)', padding: '2px 8px' }}>
                 <Check size={10} /> CERTIFIED
@@ -475,17 +501,6 @@ export function LearningTracker() {
       .select('id,item_id,kind,title,url,file_name,mime_type,size_bytes');
     if (!materialError) setMaterials((mats ?? []) as LearningMaterial[]);
     if (materialError) setLoadError('Learning items loaded, but study materials could not be loaded. Retry to recover them.');
-    // pull certificate images for completed items so cards can showcase them
-    const { data: certs } = await supabase
-      .from('learning_items')
-      .select('id,image_base64')
-      .eq('status', 'completed')
-      .not('image_base64', 'is', null);
-    if (certs && certs.length > 0) {
-      const certMap: Record<string, string> = {};
-      for (const c of certs) certMap[c.id] = c.image_base64 ?? '';
-      setItems((prev) => prev.map((i) => (certMap[i.id] ? { ...i, image_base64: certMap[i.id] } : i)));
-    }
     } catch { setLoadError('Your learning library could not be loaded. Check your connection and try again.'); }
     finally { setLoading(false); }
   }, []);
