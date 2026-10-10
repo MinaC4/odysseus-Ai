@@ -1244,6 +1244,10 @@ def _apply_hosted_thinking_mode(
             payload.pop("reasoning", None)
             return
         payload["reasoning"] = {"enabled": True} if mode == "on" else {"effort": "none"}
+    elif provider == "nvidia" and model_id.startswith("z-ai/glm-5"):
+        # NVIDIA's GLM-5 endpoint defaults to maximum reasoning; use its
+        # smallest supported budget for normal chat turns.
+        payload["reasoning_effort"] = "max" if mode == "on" else "low"
     elif provider in {"moonshot", "kimi-code"} and "kimi" in model_id:
         payload["thinking"] = {"type": "enabled" if mode == "on" else "disabled"}
 

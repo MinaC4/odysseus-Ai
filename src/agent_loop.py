@@ -8448,7 +8448,7 @@ def _agent_route_tool_mode(
         "qwen3", "qwen35", "qwen2.5", "mixtral", "mistral", "llama-3.1", "llama-3.2",
         "llama-3.3", "llama-4", "llama3.1", "llama3.2", "llama3.3", "llama4",
         "minimax", "kimi", "yi-", "phi-3", "phi-4", "command-r",
-        "glm-4", "internlm", "hermes", "deepseek-v", "deepseek-chat",
+        "glm-4", "glm-5", "internlm", "hermes", "deepseek-v", "deepseek-chat",
     ))
     model_no_tools = any(kw in model_lc for kw in (
         "deepseek-r1",

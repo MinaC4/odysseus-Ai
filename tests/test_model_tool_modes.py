@@ -123,6 +123,33 @@ def test_odysseus_ajax_names_force_native_tool_transport():
     ) == (True, False, False)
 
 
+def test_nvidia_glm5_uses_native_tools_and_low_default_reasoning(monkeypatch):
+    from core import database
+
+    class Query:
+        def filter(self, *args, **kwargs):
+            return self
+
+        def all(self):
+            return []
+
+    class Db:
+        def query(self, *args, **kwargs):
+            return Query()
+
+        def close(self):
+            pass
+
+    monkeypatch.setattr(database, "SessionLocal", lambda: Db())
+    assert agent_loop._agent_route_tool_mode(
+        "https://integrate.api.nvidia.com/v1", "z-ai/glm-5.3"
+    ) == (True, False, False)
+
+    payload = {}
+    llm_core._apply_hosted_thinking_mode(payload, "nvidia", "z-ai/glm-5.3", "off")
+    assert payload["reasoning_effort"] == "low"
+
+
 def test_builtin_function_schemas_are_accepted_by_openai_top_level_contract():
     forbidden = {"oneOf", "anyOf", "allOf", "enum", "const", "not"}
     for schema in FUNCTION_TOOL_SCHEMAS:

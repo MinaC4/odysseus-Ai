@@ -27,7 +27,7 @@ def _compute_is_api_model(model: str, endpoint_url: str, endpoint_supports=None)
         "qwen3", "qwen2.5", "mixtral", "mistral", "llama-3.1", "llama-3.2",
         "llama-3.3", "llama-4", "llama3.1", "llama3.2", "llama3.3", "llama4",
         "minimax", "kimi", "yi-", "phi-3", "phi-4", "command-r",
-        "glm-4", "internlm", "hermes",
+        "glm-4", "glm-5", "internlm", "hermes",
         "deepseek-v", "deepseek-chat",
     ))
     model_no_tools = any(kw in model_lc for kw in (
@@ -105,6 +105,11 @@ class TestDeepSeekToolSupport:
 
     def test_deepseek_v2_cloud_gets_tools(self):
         assert _compute_is_api_model("deepseek-v2.5", "https://api.deepseek.com/v1") is True
+
+    def test_glm5_cloud_gets_native_tools(self):
+        assert _compute_is_api_model(
+            "z-ai/glm-5.3", "https://integrate.api.nvidia.com/v1"
+        ) is True
 
     # --- endpoint_supports override takes priority ---
 
