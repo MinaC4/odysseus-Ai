@@ -12,7 +12,7 @@ import { HudInput, HudSelect, HudTextarea } from '@/components/HudInputs';
 import { renderMarkdown } from '@/lib/markdown';
 import { parseQuickLauncherUrl, reorderQuickLinks, validateQuickLauncherImport } from '@/lib/quick-launcher';
 import './quick-launcher.css';
-import { eventTarget, activeElement as deepActiveElement } from '@/lib/dom';
+import { isWorkspaceShortcutBlocked, activeElement as deepActiveElement } from '@/lib/dom';
 
 interface QuickLink {
   id: string;
@@ -183,10 +183,9 @@ export function QuickLauncher() {
   }, [activeEmbed, embedVersion]);
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
-      const target = eventTarget(event) as HTMLElement | null;
-      const editingText = !!target && (target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName));
-      if (event.key === '/' && !editingText && !showForm && !detailTarget && !deleteTarget && !event.metaKey && !event.ctrlKey && !event.altKey) { event.preventDefault(); searchRef.current?.focus(); }
-      if (event.key.toLowerCase() === 'n' && !editingText && !showForm && !detailTarget && !deleteTarget && !event.metaKey && !event.ctrlKey && !event.altKey) { event.preventDefault(); openAdd(); }
+      if (event.defaultPrevented || event.isComposing || isWorkspaceShortcutBlocked(event) || showForm || detailTarget || deleteTarget || event.metaKey || event.ctrlKey || event.altKey) return;
+      if (event.key === '/') { event.preventDefault(); searchRef.current?.focus(); }
+      if (event.key.toLowerCase() === 'n') { event.preventDefault(); openAdd(); }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);

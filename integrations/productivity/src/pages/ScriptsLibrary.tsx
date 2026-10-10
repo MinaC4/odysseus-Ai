@@ -1,4 +1,4 @@
-import { eventTarget } from "@/lib/dom";
+import { isWorkspaceShortcutBlocked } from "@/lib/dom";
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import {
   Trash2, Code2, ChevronDown, ChevronUp, Pencil, Star, Copy, Check,
@@ -430,8 +430,7 @@ export function ScriptsLibrary() {
   // ── Keyboard shortcuts: / search · 1-2 views · N new script ──────
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      const t = eventTarget(e) as HTMLElement;
-      if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT')) return;
+      if (e.defaultPrevented || e.isComposing || e.ctrlKey || e.metaKey || e.altKey || isWorkspaceShortcutBlocked(e)) return;
       if (e.key === '/') {
         e.preventDefault();
         gRef.current?.focus();

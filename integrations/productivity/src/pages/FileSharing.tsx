@@ -1,4 +1,4 @@
-import { eventTarget } from "@/lib/dom";
+import { eventTarget, isWorkspaceShortcutBlocked } from "@/lib/dom";
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowUp, Check, ChevronLeft, ChevronRight, Download, ExternalLink, Eye, FileText, Files, HardDrive, Image, LayoutGrid, LayoutList, Link2, Loader2, Maximize2, Minimize2, Pencil, RefreshCw, RotateCcw, Search, Terminal, Trash2, Upload, X, ZoomIn, ZoomOut } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
@@ -70,7 +70,8 @@ function ImageViewer({ src, alt, onDownload, onPrevious, onNext }: { src: string
   }, [measure]);
   useEffect(() => {
     const key = (event: KeyboardEvent) => {
-      if (event.target instanceof HTMLElement && event.target.closest('input,textarea,select')) return;
+      const target = eventTarget(event) as HTMLElement | null;
+      if (event.defaultPrevented || event.isComposing || target?.closest('input,textarea,select,[contenteditable]:not([contenteditable="false"])')) return;
       if (['+', '=', '-', '0', 'ArrowLeft', 'ArrowRight'].includes(event.key)) event.preventDefault();
       if (event.key === '+' || event.key === '=') zoomBy(.15);
       if (event.key === '-') zoomBy(-.15);
@@ -228,7 +229,7 @@ export function FileSharing() {
   useEffect(() => { setPage(1); }, [search, filter, sort]);
   useEffect(() => {
     const key = (event: KeyboardEvent) => {
-      if ((eventTarget(event) as HTMLElement)?.closest('input,textarea,select,[contenteditable="true"],[role="dialog"]') || document.querySelector('[role="dialog"][aria-modal="true"]')) return;
+      if (event.defaultPrevented || event.isComposing || isWorkspaceShortcutBlocked(event)) return;
       if (event.key === '/') { event.preventDefault(); searchRef.current?.focus(); }
       if (event.key === 'Escape') setSelected(new Set());
       if (event.key.toLowerCase() === 'u' && !uploadRef.current) inputRef.current?.click();

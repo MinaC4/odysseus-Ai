@@ -30,7 +30,7 @@ export function HudModal({ open, onClose, title, children, className = '' }: Hud
       if (!panelRef.current?.contains(activeElement())) (focusable()[0] ?? panelRef.current)?.focus();
     });
     const handler = (e: KeyboardEvent) => {
-      const dialogs = document.querySelectorAll('[role="dialog"][aria-modal="true"]');
+      const dialogs = (panelRef.current?.getRootNode() as ParentNode | undefined)?.querySelectorAll('[role="dialog"][aria-modal="true"]') ?? [];
       if (dialogs.length && dialogs[dialogs.length - 1] !== panelRef.current) return;
       if (e.key === 'Escape') { e.preventDefault(); closeRef.current(); }
       if (e.key !== 'Tab') return;

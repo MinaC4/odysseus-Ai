@@ -1,4 +1,4 @@
-import { eventTarget } from "@/lib/dom";
+import { isWorkspaceShortcutBlocked } from "@/lib/dom";
 /* eslint-disable react-refresh/only-export-components -- Page-local calculations are exported for focused checks. */
 import { type CSSProperties, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
@@ -1082,9 +1082,7 @@ export function LearningTracker() {
   useEffect(() => {
     if (gOpen) return;
     const onKey = (e: KeyboardEvent) => {
-      if (detailItem || showModal || e.ctrlKey || e.metaKey || e.altKey) return;
-      const t = eventTarget(e) as HTMLElement;
-      if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT')) return;
+      if (e.defaultPrevented || e.isComposing || detailItem || showModal || e.ctrlKey || e.metaKey || e.altKey || isWorkspaceShortcutBlocked(e)) return;
       if (e.key === '/') {
         e.preventDefault();
         gRef.current?.focus();

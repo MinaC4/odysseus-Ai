@@ -1,4 +1,4 @@
-import { eventTarget } from "@/lib/dom";
+import { isWorkspaceShortcutBlocked } from "@/lib/dom";
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Archive, ArrowDown, ArrowUp, Check, ExternalLink, LayoutGrid, Lightbulb, List, Plus, Rocket, Search, Trash2, X, BarChart3 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
@@ -64,8 +64,7 @@ export function IdeaInbox() {
   useEffect(() => { void load(); }, [load]);
   useEffect(() => {
     const handler = (event: KeyboardEvent) => {
-      const target = eventTarget(event) as HTMLElement;
-      if (event.ctrlKey || event.metaKey || event.altKey || target.closest('input,textarea,select,[contenteditable="true"],[role="dialog"]')) return;
+      if (event.defaultPrevented || event.isComposing || event.ctrlKey || event.metaKey || event.altKey || isWorkspaceShortcutBlocked(event)) return;
       if (event.key === '/') { event.preventDefault(); searchRef.current?.focus(); }
       if (event.key.toLowerCase() === 'n') { event.preventDefault(); captureRef.current?.focus(); }
     };

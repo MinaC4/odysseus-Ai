@@ -1,4 +1,5 @@
 import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from 'react';
+import { isWorkspaceShortcutBlocked } from '@/lib/dom';
 import { Bookmark as BookmarkIcon, Plus, Search, LayoutGrid, List, Pin, ExternalLink, Pencil, Trash2, Copy, Download, Upload, Folder, X, ArrowUpRight, ChevronLeft, ChevronRight, MoreHorizontal, CheckSquare, Square, Layers, FileDown } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { PageContainer, LoadingState, ErrorState } from '@/components/PageLayout';
@@ -72,7 +73,7 @@ export function Bookmarks() {
   const openAdd = useCallback(() => { setEditing(null); setDraft(blank); setFormError(''); setModal(true); }, []);
   useEffect(() => {
     const handler = (event: KeyboardEvent) => {
-      if (modal || deleting || selected || event.ctrlKey || event.metaKey || event.altKey || (event.target instanceof HTMLElement && (event.target.isContentEditable || /INPUT|TEXTAREA|SELECT/.test(event.target.tagName)))) return;
+      if (event.defaultPrevented || event.isComposing || modal || deleting || selected || event.ctrlKey || event.metaKey || event.altKey || isWorkspaceShortcutBlocked(event)) return;
       if (event.key === '/') { event.preventDefault(); searchRef.current?.focus(); }
       if (event.key.toLowerCase() === 'n') { event.preventDefault(); openAdd(); }
     };

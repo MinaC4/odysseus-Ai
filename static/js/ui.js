@@ -9,6 +9,7 @@ import * as Modals from './modalManager.js';
 import spinnerModule from './spinner.js';
 import { registerMenuDismiss, dismissTopEscapeLayer, dismissOrRemove } from './escMenuStack.js';
 import { nextToolWindowZ, topToolWindowZ } from './toolWindowZOrder.js';
+import { composedContains, composedTarget } from './composed-event.js';
 
 let toastEl = null;
 let autoScrollEnabled = true;
@@ -172,11 +173,11 @@ function _closeHoveredWindow() {
 }
 
 function _spaceIsBlocked(e, surface) {
-  const target = _targetEl(e.target);
+  const target = _targetEl(composedTarget(e));
   if (!target) return false;
-  if (_isTextEditingTarget(target)) return !surface || surface.contains(target);
+  if (_isTextEditingTarget(target)) return !surface || composedContains(surface, target);
   const blocked = target.closest?.(SPACE_BLOCKED_SELECTOR);
-  return !!(blocked && (!surface || surface.contains(blocked)));
+  return !!(blocked && (!surface || composedContains(surface, blocked)));
 }
 
 function _activateSpaceCard(card) {
