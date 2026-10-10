@@ -45,7 +45,7 @@ spec:
               mountPath: /data
       containers:
         - name: odysseus
-          image: odysseus-ai:hephastos-3
+          image: odysseus-ai:hephastos-5
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
@@ -57,6 +57,10 @@ spec:
               value: admin
             - name: HEPHASTOS_WORKSPACE_TIMEZONE
               value: Africa/Cairo
+            - name: HEPHASTOS_OPERATOR
+              value: marshal
+            - name: HEPHASTOS_DASHBOARD_URL
+              value: http://192.168.1.8:30000
             - name: HEPHASTOS_BRIDGE_TOKEN
               valueFrom:
                 secretKeyRef:
