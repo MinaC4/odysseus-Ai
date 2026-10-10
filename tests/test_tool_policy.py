@@ -473,6 +473,17 @@ def test_youtube_pronoun_followup_inherits_prior_channel_topic():
     )
 
 
+def test_approved_productivity_tool_survives_contextual_web_followup():
+    tools = al._preserve_approved_followup_tools(
+        {"web_search"}, {"manage_productivity"}
+    )
+
+    assert tools == {"web_search", "manage_productivity"}
+    assert al._preserve_approved_followup_tools(
+        {"web_search"}, {"manage_productivity"}, {"manage_productivity"}
+    ) == {"web_search"}
+
+
 def test_web_query_source_preference_removes_if_possible_filler():
     query = al._web_search_query_from_user_text(
         "What is the latest unemployment rate in the US? Use BLS if possible"

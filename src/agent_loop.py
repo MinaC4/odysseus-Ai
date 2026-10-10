@@ -7809,6 +7809,12 @@ def _web_only_route_tools(text: str, disabled_tools: Set[str]) -> Set[str]:
         tools.add("private_browser")
     return tools
 
+
+def _preserve_approved_followup_tools(route_tools, approved_tools=(), disabled_tools=()):
+    tools = set(route_tools or ())
+    tools.update(set(approved_tools or ()) - set(disabled_tools or ()))
+    return tools
+
 _WORKSPACE_AGENT_TOOLS = (
     _DOMAIN_TOOL_MAP["files"]
     | {"manage_skills", "ask_teacher", "web_search", "web_fetch", "ask_user", "update_plan"}
@@ -23290,7 +23296,13 @@ async def stream_agent_loop(
         and not _explicit_no_web_lookup
         and not _explicit_delegation_tools
     ):
-        _relevant_tools = set(WEB_TOOL_NAMES) if (_contextual_web_resource_followup or _contextual_web_tool_followup) else {"web_search"}
+        _relevant_tools = _preserve_approved_followup_tools(
+            set(WEB_TOOL_NAMES)
+            if (_contextual_web_resource_followup or _contextual_web_tool_followup)
+            else {"web_search"},
+            relevant_tools if exact_approval is not None else (),
+            disabled_tools,
+        )
         if _youtube_tool_turn and "youtube_tool" not in disabled_tools:
             _relevant_tools.add("youtube_tool")
         if (
