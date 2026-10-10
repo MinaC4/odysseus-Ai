@@ -6327,7 +6327,7 @@ class TurnContract:
 
 def resolve_full_inventory_contract(*, schemas: Iterable[dict], policy: ToolPolicy) -> TurnContract:
     """Experimental trained inventory: permissions filter offers; model chooses actions."""
-    families = frozenset({"calendar", "notes", "tasks", "skills", "memory", "documents",
+    families = frozenset({"productivity", "calendar", "notes", "tasks", "skills", "memory", "documents",
                           "email", "search_browser", "shell_files", "cookbook_admin",
                           "image_editing", "image_generation"})
     # ``ui_control`` is the executable bridge for explicit client-interface
