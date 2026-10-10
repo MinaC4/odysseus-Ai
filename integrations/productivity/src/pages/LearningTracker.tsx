@@ -229,8 +229,10 @@ function LearningCard({
     if (!item.image_mime_type || !certificateRef.current) return;
     let active = true;
     const load = async () => {
-      const { data } = await supabase.from('learning_items').select('image_base64').eq('id', item.id).single();
-      if (active && data?.image_base64) setCertificateImage(data.image_base64 as string);
+      try {
+        const { data } = await supabase.from('learning_items').select('image_base64').eq('id', item.id).single();
+        if (active && data?.image_base64) setCertificateImage(data.image_base64 as string);
+      } catch { /* The card remains usable if a certificate preview is unavailable. */ }
     };
     if (typeof IntersectionObserver === 'undefined') void load();
     else {
@@ -250,8 +252,10 @@ function LearningCard({
     event.stopPropagation();
     let image = certificateImage;
     if (!image) {
-      const { data } = await supabase.from('learning_items').select('image_base64').eq('id', item.id).single();
-      image = data?.image_base64 as string | null;
+      try {
+        const { data } = await supabase.from('learning_items').select('image_base64').eq('id', item.id).single();
+        image = data?.image_base64 as string | null;
+      } catch { return; }
       if (image) setCertificateImage(image);
     }
     if (image) onCertClick?.({ ...item, image_base64: image });
