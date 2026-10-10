@@ -150,6 +150,9 @@ _ACTION_REQUEST = _REQUEST_PREFIX + (
     r"serve|stop|enable|disable|switch|research|investigate|generate|upscale|transcribe|inspect|browse)\b"
 )
 _ACTION = re.compile(r"^\s*" + _ACTION_REQUEST, re.I)
+_ARABIC_ACTION_SIGNAL = r"(?<![\w])(?:ت?ضيف(?:لي|ليها)?|أضيف|اضيف|أضف|اضف|إضافة|اضافة|"
+_ARABIC_ACTION_SIGNAL += r"تسجل|سجل|سجّل|تكتب|اكتب|تحفظ|احفظ|تعدل|عدّل|تحدث|حدّث|"
+_ARABIC_ACTION_SIGNAL += r"تبدأ|ابدأ|نفذ|نفّذ|احذف)(?![\w])"
 _CONVERSATIONAL_ACTION_LEAD = re.compile(
     r"^\s*(?:hey|hi|hiya|hello)[,!]?\s+"
     r"(?:quick\s+(?:one|question)\s*[—–:,-]\s*)?"
@@ -743,6 +746,8 @@ def _has_action_signal(text: str) -> bool:
     """Recognize a normal action prefix or one transposition/typo in its verb."""
     if (_ACTION.search(text) or _CONTEXTUAL_ACTION.search(text)
             or _RETURN_TO_ACTION.search(text) or calendar_retiming_request(text)):
+        return True
+    if re.search(_ARABIC_ACTION_SIGNAL, str(text or "")):
         return True
     tokens = re.findall(r"[a-z]+", str(text or "").lower())[:6]
     while tokens and tokens[0] in {"please", "ok", "okay", "also", "then", "yes", "yeah", "sure"}:

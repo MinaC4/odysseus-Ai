@@ -3384,6 +3384,37 @@ def test_explicit_followup_forget_uses_the_immutable_memory_family():
     assert allowed.allowed and allowed.reason == 'allowed'
 
 
+def test_arabic_day_organizer_write_reaches_the_compact_tool_runtime():
+    from src.clean_agent_preview import PREVIEW_TOOLS
+    from src.turn_contract import requested_capabilities, resolve_turn_contract
+
+    message = 'عايزك تضيف فصفحة ال day organizer اني شغال علي مراجعة وتحسين ال work station بتاعتي'
+    policy = ToolPolicy()
+    active = requested_capabilities(message)
+    schemas = [
+        schema for schema in FUNCTION_TOOL_SCHEMAS
+        if schema['function']['name'] in PREVIEW_TOOLS
+    ]
+    routed = resolve_turn_contract(
+        capabilities=active, schemas=schemas, policy=policy,
+    )
+    preview = scope_preview_contract(
+        resolve_full_inventory_contract(schemas=schemas, policy=policy),
+        routed, active,
+    )
+
+    assert active == frozenset({'productivity'})
+    assert 'manage_productivity' in PREVIEW_TOOLS
+    assert 'manage_productivity' in preview.offered
+    decision = evaluate_preview_call(
+        'manage_productivity',
+        {'action': 'create', 'collection': 'calendar_items', 'values': {'title': 'مراجعة وتحسين Work Station'}},
+        message,
+        turn_authorized_families=active,
+    )
+    assert decision.allowed and decision.reason == 'allowed'
+
+
 def test_skill_update_alias_normalizes_to_edit_before_policy():
     tool, args = normalize_preview_function_args(
         'manage_skills', {'action': 'update', 'name': 'example-skill', 'description': 'new'},
@@ -3485,6 +3516,7 @@ def test_every_compactly_offered_preview_tool_has_valid_policy_permitted_call():
             'manage_documents': ({'action': 'list'}, 'list my documents'),
             'manage_memory': ({'action': 'list'}, 'list my memories'),
             'manage_notes': ({'action': 'list'}, 'list my notes'),
+            'manage_productivity': ({'action': 'list', 'collection': 'calendar_items'}, 'list my Day Organizer items'),
             'manage_research': ({'action': 'list'}, 'list my saved research reports'),
             'manage_skills': ({'action': 'list'}, 'list my skills'),
             'manage_tasks': ({'action': 'list'}, 'list my tasks'),

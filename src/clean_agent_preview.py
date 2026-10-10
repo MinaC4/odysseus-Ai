@@ -39,7 +39,7 @@ from src.text_scanning import (
     iter_prefixed_token_matches,
 )
 from src.turn_contract import (
-    _REQUEST_PREFIX,
+    _REQUEST_PREFIX, _FAMILY_WORDS, _ARABIC_ACTION_SIGNAL,
     calendar_retiming_request,
     FAMILY_TOOLS, broad_web_briefing_request, required_read_operation_for_request,
     targets_bound_editor_request, inline_text_transformation, editor_request_instructions,
@@ -174,6 +174,7 @@ ARTIFACT_RESEARCH_TOOLS = frozenset({
 })
 READ_TOOLS = frozenset({
     'manage_notes', 'manage_calendar', 'manage_memory', 'manage_skills', 'manage_tasks',
+    'manage_productivity',
     'manage_documents', 'manage_research', 'manage_contact', 'list_sessions',
     'search_chats', 'resolve_contact', 'list_email_accounts', 'list_emails',
     'search_emails', 'read_email', 'download_attachment', 'scan_spam', 'scan_email_unsubscribes',
@@ -188,6 +189,7 @@ READ_TOOLS = frozenset({
 })
 SAFE_WRITE_TOOLS = frozenset({
     'manage_notes', 'manage_calendar', 'manage_memory', 'manage_skills', 'manage_tasks',
+    'manage_productivity',
     'create_document', 'manage_documents', 'edit_document', 'update_document',
     'suggest_document',
     'draft_email', 'draft_email_reply',
@@ -236,6 +238,7 @@ ALLOWED_EFFECTS = frozenset({
 SAFE_ACTIONS = {
     'manage_notes': frozenset({'list', 'search', 'find', 'view', 'add', 'update', 'delete', 'toggle_item'}),
     'manage_calendar': frozenset({'list_calendars', 'list_events', 'create_event', 'update_event', 'delete_event'}),
+    'manage_productivity': frozenset({'list', 'get', 'create', 'update', 'delete', 'propose'}),
     'manage_memory': frozenset({'list', 'search', 'add', 'edit', 'delete'}),
     'manage_skills': frozenset({'list', 'index', 'view', 'view_ref', 'search', 'add', 'edit', 'patch', 'delete'}),
     'manage_tasks': frozenset({'list', 'create', 'edit', 'delete', 'pause', 'resume'}),
@@ -2326,6 +2329,7 @@ def authorized_write_families(user_text):
         families.add('tasks' if container == 'manage_tasks' else 'notes')
     patterns = {
         'email': r'\b(?:e.?mail|emil|inbox|mail)\b',
+        'productivity': _FAMILY_WORDS['productivity'],
         # ``Note:`` commonly introduces a definition; it is not authority to
         # mutate the user's saved notes.
         'notes': r'\b(?:(?:notes?|noes)(?!\s*:)|todo|to-do|remind(?:er|ing)?)\b',
@@ -4227,7 +4231,7 @@ _MUTATION_REQUEST = re.compile(
     r'set|schedul(?:e|ing)|reschedul(?:e|ing)|paus(?:e|ing)|resum(?:e|ing)|toggle|mark|'
     r'pin|archive|delet(?:e|ing)|remov(?:e|ing)|send|reply|draft|publish|run|launch|serve|start|stop|'
     r'remember|remeber|forget|remind|review|proofread|suggest(?:ions?)?|expand|broaden|deepen|lighten|feedback|reserve|block)\b|'
-    r'\bgo\s+deeper\b',
+    r'\bgo\s+deeper\b|' + _ARABIC_ACTION_SIGNAL,
     re.I,
 )
 _COMPLETION_CLAIM = re.compile(
