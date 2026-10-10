@@ -36,6 +36,18 @@ _CALENDAR_ACTION = (
 )
 _CALENDAR_THING = r"(?:calendar|calendar\s+(?:entry|item)|event|meeting|appointment|entry|call)"
 _CALENDAR_READ_THING = r"(?:calendar|schedule|events?|meetings?|appointments?|classes?)"
+_PRODUCTIVITY_PAGE = (
+    r"(?:day\s+organizer|daily\s+organizer|idea\s+inbox|ideas?|scripts?\s+library|"
+    r"learning\s+tracker|bookmarks?|file\s+sharing|quick\s+launcher|personal\s+workspace|"
+    r"منظم\s+اليوم|منظّم\s+اليوم|الأفكار|الافكار|مكتبة\s+السكريبتات|مكتبة\s+السكربتات|"
+    r"متابع\s+التعلم|المفضلة|مشاركة\s+الملفات|التشغيل\s+السريع)"
+)
+_PRODUCTIVITY_ACTION = (
+    r"(?:add|create|capture|save|write|edit|update|change|delete|remove|list|show|open|read|"
+    r"what(?:['’]s|\s+is)?|which|"
+    r"find|search|manage|schedule|complete|mark|ضيف|أضيف|اضيف|تضيف|إضافة|أضف|سجل|سجّل|"
+    r"احفظ|اكتب|عدّل|عدل|حدّث|حدث|امسح|احذف|اعرض|وريني|هات|نظّم|نظم)"
+)
 _EXPLANATORY_PREFIX = re.compile(
     r"^\s*(?:how\s+(?:do|can)\s+i|can\s+you\s+explain|what\s+about|tell\s+me\s+how|show\s+me\s+how)\b",
     re.I,
@@ -83,6 +95,8 @@ _CODE_WORKSPACE_TARGET = (
 _ROUTING_PATTERNS: tuple[tuple[str, str, Pattern[str]], ...] = tuple(
     (category, reason, re.compile(pattern, re.I))
     for category, reason, pattern in (
+        ("productivity", "personal workspace page action request", rf"\b{_PRODUCTIVITY_ACTION}\b.{{0,160}}\b{_PRODUCTIVITY_PAGE}\b|{_PRODUCTIVITY_ACTION}.{{0,160}}{_PRODUCTIVITY_PAGE}"),
+        ("productivity", "personal workspace page action request", rf"\b{_PRODUCTIVITY_PAGE}\b.{{0,160}}\b{_PRODUCTIVITY_ACTION}\b|{_PRODUCTIVITY_PAGE}.{{0,160}}{_PRODUCTIVITY_ACTION}"),
         # Calendar/event creation. Covers "Can you add an entry to my
         # calendar?", imperatives like "add lunch to my calendar", and
         # follow-ups such as "you should be able to create that event now".

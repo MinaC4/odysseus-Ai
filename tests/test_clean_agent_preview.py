@@ -3404,6 +3404,7 @@ def test_arabic_day_organizer_write_reaches_the_compact_tool_runtime():
     )
 
     assert active == frozenset({'productivity'})
+    assert requested_capabilities('What ideas are in my Idea Inbox?') == frozenset({'productivity'})
     assert 'manage_productivity' in PREVIEW_TOOLS
     assert 'manage_productivity' in preview.offered
     decision = evaluate_preview_call(

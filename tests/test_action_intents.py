@@ -38,6 +38,19 @@ def test_note_todo_and_reminder_actions_promote_to_agent():
     assert message_needs_tools("set a reminder to call Pat at 4pm")
 
 
+def test_productivity_page_actions_promote_to_agent_in_arabic_and_english():
+    prompts = (
+        "عايزك تضيف فصفحة ال day organizer اني شغال علي مراجعة وتحسين ال work station بتاعتي",
+        "ضيف الفكرة دي في Idea Inbox",
+        "Add a bookmark to my Bookmarks page",
+        "What ideas are in my Idea Inbox?",
+    )
+    for prompt in prompts:
+        intent = classify_tool_intent(prompt)
+        assert intent.needs_tools
+        assert intent.category == "productivity"
+
+
 def test_email_and_ui_actions_promote_to_agent():
     assert message_needs_tools("reply to that email")
     assert message_needs_tools("mark those emails as read")

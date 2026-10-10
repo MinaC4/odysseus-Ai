@@ -115,7 +115,7 @@ _FAMILY_WORDS = {
     "skills": r"\bskills?\b",
     "memory": r"\b(?:memory|memories|memores|remember|forget|past\s+chats?|previous\s+conversations?)\b",
     "documents": r"\b(?:documents?|documets?|docs?|editor)\b",
-    "email": r"\b(?:emails?|inbox|mailbox|mail|spam)\b",
+    "email": r"\b(?:emails?|(?<!idea )inbox|mailbox|mail|spam)\b",
     "search_browser": r"\b(?:search\s+(?:the\s+)?web|web|online|browse|browser|websites?|sites?|news|weather|youtube|arxiv|hugging\s*face)\b|https?://|\b\w+\.(?:com|org|net|io)\b",
     "shell_files": r"\b(?:files?|folders?|directory|shell|terminal|workspace|repo|repository|python|hostname|b?ssh|bash)\b",
     "cookbook_admin": r"\b(?:cookbo{1,2}k|endpoints?|models?|servers?|settings|integrations?)\b",
